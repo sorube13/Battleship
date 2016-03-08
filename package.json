@@ -9,20 +9,25 @@
   },
   "dependencies": {
     "express": "^4.9.8",
-    "node-static": "^0.7.7"
+    "node-static": "^0.7.7",
+    "socket.io": "^0.9.17"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sorube13/Battleship.git"
   },
-  "keywords": [],
+  "keywords": [
+    "node",
+    "heroku",
+    "battleship"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/sorube13/Battleship/issues"
   },
   "engines":{
-    "node": "^4.1.1"
+    "node": "4.3.1"
   },
   "homepage": "https://github.com/sorube13/Battleship#readme"
 }
