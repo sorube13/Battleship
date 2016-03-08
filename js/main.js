@@ -1,21 +1,56 @@
 'use strict';
 
+//Look after different browser vendors' ways of calling the getUserMedia() API method:
+//Opera --> getUserMedia
+//Chrome --> webkitGetUserMedia
+//Firefox --> mozGetUserMedia
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+// Clean-up function:
+// Collect garbage before unloading browser's window
+window.onbeforeunload = function(e){
+  hangup();
+}
+
+// Flags
 var isChannelReady;
 var isInitiator = false;
 var isStarted = false;
-var localStream;
-var pc;
-var remoteStream;
 var turnReady;
 
-var pc_config = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
+// HTML5 <video> elements
+var localVideo = document.querySelector('#localVideo');
+var remoteVideo = document.querySelector('#remoteVideo');
 
-//var pc_constraints = {'optional': [{'DtlsSrtpKeyAgreement': true}]};
+// WebRTC data structures
+// Streams
+var localStream;
+var remoteStream;
+// Peer Connection
+var pc;
 
-// Set up audio and video regardless of what devices are present.
-var sdpConstraints = {'mandatory': {
-  'OfferToReceiveAudio':true,
-  'OfferToReceiveVideo':true }};
+// Peer Connection ICE protocol configuration (either Firefox or Chrome)
+var pc_config = webrtcDetectedBrowser === 'firefox' ?
+  {'iceServers':[{'urls':'stun:23.21.150.121'}]} : // IP address
+  {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+
+// Peer Connection contraints: (i) use DTLS; (ii) use data channel  
+var pc_constraints = {
+  'optional': [
+    {'DtlsSrtpKeyAgreement': true},
+    {'RtpDataChannels': true}
+  ]};
+
+// Session Description Protocol constraints:
+// - use both audio and video regardless of what devices are available
+//var sdpConstraints = {'mandatory': {
+//  'OfferToReceiveAudio':true,
+//  'OfferToReceiveVideo':true }};
+
+var sdpConstraints = webrtcDetectedBrowser === 'firefox' ? 
+    {'offerToReceiveAudio':true,'offerToReceiveVideo':true } :
+    {'mandatory': {'OfferToReceiveAudio':true, 'OfferToReceiveVideo':true }};
+      
 
 /////////////////////////////////////////////
 
@@ -40,32 +75,42 @@ if (room !== '') {
   socket.emit('create or join', room);
 }
 
+// Handle 'created' message coming back from server:
+// this peer is the initiator
 socket.on('created', function (room){
   console.log('Created room ' + room);
   isInitiator = true;
 });
 
+// Handle 'full' message coming back from server:
+// this peer arrived too late :-(
 socket.on('full', function (room){
   console.log('Room ' + room + ' is full');
 });
 
+// Handle 'join' message coming back from server:
+// another peer is joining the channel
 socket.on('join', function (room){
   console.log('Another peer made a request to join room ' + room);
   console.log('This peer is the initiator of room ' + room + '!');
   isChannelReady = true;
 });
 
+// Handle 'joined' message coming from the server:
+// this is the second peer joining the channel
 socket.on('joined', function (room){
   console.log('This peer has joined room ' + room);
   isChannelReady = true;
 });
 
+// Server-sent log message 
 socket.on('log', function (array){
   console.log.apply(console, array);
 });
 
 ////////////////////////////////////////////////
 
+// Send message to the other peer via de signalling channel
 function sendMessage(message){
   console.log('Client sending message: ', message);
 /*if (typeof message === 'object') {
@@ -81,7 +126,7 @@ function handleAddIceCandidate(){
 function handleAddIceCandidateError(e){
   console.log("addIceCandidate error: " + e);
 }
-
+// receive message from the other peer via the signaling server
 socket.on('message', function (message){
   console.log('Client received message:', message);
   if (message === 'got user media') {
@@ -107,13 +152,9 @@ socket.on('message', function (message){
 
 ////////////////////////////////////////////////////
 
-var localVideo = document.querySelector('#localVideo');
-var remoteVideo = document.querySelector('#remoteVideo');
-
 function handleUserMedia(stream) {
   console.log('Adding local stream.');
   localVideo.src = window.URL.createObjectURL(stream);
-  localVideo.play();
   localStream = stream;
   sendMessage('got user media');
   if (isInitiator) {
@@ -127,13 +168,12 @@ function handleUserMediaError(error){
 
 var constraints = {video: true,
                    audio: true};
-getUserMedia(constraints, handleUserMedia, handleUserMediaError);
-
+navigator.getUserMedia(constraints, handleUserMedia, handleUserMediaError);
 console.log('Getting user media with constraints', constraints);
 
-if (location.hostname != "localhost") {
+/*if (location.hostname != "localhost") {
   requestTurn();
-}
+}*/
 //requestTurn();
 
 function maybeStart() {
@@ -148,16 +188,12 @@ function maybeStart() {
   }
 }
 
-window.onbeforeunload = function(e){
-  sendMessage('bye');
-  socket.close();
-}
-
 /////////////////////////////////////////////////////////
 
+// Peer Connection management
 function createPeerConnection() {
   try {
-    pc = new RTCPeerConnection(null);
+    pc = new RTCPeerConnection(pc_config, pc_constraints);
     pc.onicecandidate = handleIceCandidate;
     pc.onaddstream = handleRemoteStreamAdded;
     pc.onremovestream = handleRemoteStreamRemoved;
@@ -195,7 +231,7 @@ function handleCreateOfferError(event){
 
 function doCall() {
   console.log('Sending offer to peer');
-  pc.createOffer(setLocalAndSendMessage, handleCreateOfferError);
+  pc.createOffer(setLocalAndSendMessage, handleCreateOfferError, sdpConstraints);
 }
 
 function doAnswer() {
@@ -286,16 +322,16 @@ function hangup() {
 }
 
 function handleRemoteHangup() {
-//  console.log('Session terminated.');
-  // stop();
-  // isInitiator = false;
+  console.log('Session terminated.');
+  stop();
+  isInitiator = false;
 }
 
 function stop() {
   isStarted = false;
   // isAudioMuted = false;
   // isVideoMuted = false;
-  pc.close();
+  if(pc) pc.close();
   pc = null;
 }
 
