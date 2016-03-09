@@ -33,7 +33,7 @@ var pc_config = webrtcDetectedBrowser === 'firefox' ?
   {'iceServers':[{'urls':'stun:23.21.150.121'}]} : // IP address
   {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
 
-// Peer Connection contraints: (i) use DTLS; 
+// Peer Connection contraints: (i) use DTLS;
 var pc_constraints = {
   'optional': [
     {'DtlsSrtpKeyAgreement': true}
@@ -54,7 +54,6 @@ var sdpConstraints = webrtcDetectedBrowser === 'firefox' ?
 
 // Let's get started: prompt user for input (room name)
 var room = prompt('Enter room name:');
-document.querySelector('#roomTitle').innerHTML += room;
 
 // Connect to signalling server
 var socket = io.connect();
@@ -195,7 +194,6 @@ function createPeerConnection() {
   pc.onaddstream = handleRemoteStreamAdded;
   pc.onremovestream = handleRemoteStreamRemoved;
 }
-
 
 // ICE candidates management
 function handleIceCandidate(event) {
