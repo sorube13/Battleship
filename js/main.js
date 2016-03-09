@@ -12,18 +12,9 @@ window.onbeforeunload = function(e){
   hangup();
 }
 
-// Data channel information
-var sendChannel, receiveChannel;
-var sendButton = document.getElementById("sendButton");
-var sendTextarea = document.getElementById("dataChannelSend");
-var receiveTextarea = document.getElementById("dataChannelReceive");
-
 // HTML5 <video> elements
 var localVideo = document.querySelector('#localVideo');
 var remoteVideo = document.querySelector('#remoteVideo');
-
-// Handler associated with 'Send' button
-sendButton.onclick = sendData;
 
 // Flags...
 var isChannelReady;
@@ -45,8 +36,7 @@ var pc_config = webrtcDetectedBrowser === 'firefox' ?
 // Peer Connection contraints: (i) use DTLS; (ii) use data channel  
 var pc_constraints = {
   'optional': [
-    {'DtlsSrtpKeyAgreement': true},
-    {'RtpDataChannels': true}
+    {'DtlsSrtpKeyAgreement': true}
   ]};
 
 // Session Description Protocol constraints:
@@ -203,77 +193,8 @@ function createPeerConnection() {
   }
   pc.onaddstream = handleRemoteStreamAdded;
   pc.onremovestream = handleRemoteStreamRemoved;
-
-  if (isInitiator) {
-    try {
-      // Create a reliable data channel
-      sendChannel = pc.createDataChannel("sendDataChannel",
-        {reliable: true});
-      trace('Created send data channel');
-    } catch (e) {
-      alert('Failed to create data channel. ');
-      trace('createDataChannel() failed with exception: ' + e.message);
-    }
-    sendChannel.onopen = handleSendChannelStateChange;
-    sendChannel.onmessage = handleMessage;
-    sendChannel.onclose = handleSendChannelStateChange;
-  } else { // Joiner
-    pc.ondatachannel = gotReceiveChannel;
-  }
 }
 
-// Data channel management
-function sendData() {
-  var data = sendTextarea.value;
-  if(isInitiator) sendChannel.send(data);
-  else receiveChannel.send(data);
-  trace('Sent data: ' + data);
-}
-
-// Handlers...
-
-function gotReceiveChannel(event) {
-  trace('Receive Channel Callback');
-  receiveChannel = event.channel;
-  receiveChannel.onmessage = handleMessage;
-  receiveChannel.onopen = handleReceiveChannelStateChange;
-  receiveChannel.onclose = handleReceiveChannelStateChange;
-}
-
-function handleMessage(event) {
-  trace('Received message: ' + event.data);
-  receiveTextarea.value += event.data + '\n';
-}
-
-function handleSendChannelStateChange() {
-  var readyState = sendChannel.readyState;
-  trace('Send channel state is: ' + readyState);
-  // If channel ready, enable user's input
-  if (readyState == "open") {
-    dataChannelSend.disabled = false;
-    dataChannelSend.focus();
-    dataChannelSend.placeholder = "";
-    sendButton.disabled = false;
-  } else {
-    dataChannelSend.disabled = true;
-    sendButton.disabled = true;
-  }
-}
-
-function handleReceiveChannelStateChange() {
-  var readyState = receiveChannel.readyState;
-  trace('Receive channel state is: ' + readyState);
-  // If channel ready, enable user's input
-  if (readyState == "open") {
-      dataChannelSend.disabled = false;
-      dataChannelSend.focus();
-      dataChannelSend.placeholder = "";
-      sendButton.disabled = false;
-    } else {
-      dataChannelSend.disabled = true;
-      sendButton.disabled = true;
-    }
-}
 
 // ICE candidates management
 function handleIceCandidate(event) {
