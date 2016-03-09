@@ -33,7 +33,7 @@ var pc_config = webrtcDetectedBrowser === 'firefox' ?
   {'iceServers':[{'urls':'stun:23.21.150.121'}]} : // IP address
   {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
 
-// Peer Connection contraints: (i) use DTLS; (ii) use data channel  
+// Peer Connection contraints: (i) use DTLS; 
 var pc_constraints = {
   'optional': [
     {'DtlsSrtpKeyAgreement': true}
@@ -265,11 +265,8 @@ function handleRemoteHangup() {
 
 function stop() {
   isStarted = false;
-  if (sendChannel) sendChannel.close();
-  if (receiveChannel) receiveChannel.close();
   if (pc) pc.close();  
   pc = null;
-  sendButton.disabled=true;
 }
 
 ///////////////////////////////////////////
