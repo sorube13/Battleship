@@ -32,6 +32,41 @@ var pc;
 var pc_config = webrtcDetectedBrowser === 'firefox' ?
   {'iceServers':[{'urls':'stun:23.21.150.121'}]} : // IP address
   {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+//var pc_config;
+
+var ident= "sorube";
+var secret= "3ba84e92-dc9f-11e5-be0d-27778885886f";
+var domain= "www.silvia-battleship.com";
+var application= "default";
+var room= 'default';
+var secure = 1;
+
+function createCORSRequest(method, url) {
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+      xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+      xhr = new XDomainRequest();
+      xhr.open(method, url);
+  } else {
+      xhr = null;
+  }
+  return xhr;
+}
+
+var url = 'https://service.xirsys.com/ice';
+var xhr = createCORSRequest('POST', url);
+xhr.onload = function() {
+    var iceServers = JSON.parse(xhr.responseText).d.iceServers;
+    pc_config.iceServers = iceServers;
+};
+xhr.onerror = function() {
+    console.error('Woops, there was an error making xhr request.');
+};
+xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+xhr.send('ident='+ident+'&secret='+secret+'&domain='+domain+'&application='+application+'&room='+room+'&secure='+secure);
+
 
 // Peer Connection contraints: (i) use DTLS;
 var pc_constraints = {
@@ -66,7 +101,8 @@ if (room !== '') {
 }
 
 // Set getUserMedia constraints
-var constraints = {video: true};
+var constraints = {video: true,
+                   audio: true };
 
 // Call getUserMedia()
 navigator.getUserMedia(constraints, handleUserMedia, handleUserMediaError);
