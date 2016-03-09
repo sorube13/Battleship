@@ -54,6 +54,7 @@ var sdpConstraints = webrtcDetectedBrowser === 'firefox' ?
 
 // Let's get started: prompt user for input (room name)
 var room = prompt('Enter room name:');
+document.querySelector('#roomTitle').innerHTML += room;
 
 // Connect to signalling server
 var socket = io.connect();
