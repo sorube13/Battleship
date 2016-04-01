@@ -1,3 +1,10 @@
+var ident= "sorube";
+var secret= "3ba84e92-dc9f-11e5-be0d-27778885886f";
+var domain= "www.silvia-battleship.com";
+var application= "default";
+var room= 'default';
+var secure = 1;
+
 var static = require('node-static');
 var http = require('http');
 var file = new(static.Server)();
@@ -42,5 +49,10 @@ io.sockets.on('connection', function (socket){
 		}
 		socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
 		socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
+	});
+
+	socket.on('test', function(){
+		var toto = 'ident='+ident+'&secret='+secret+'&domain='+domain+'&application='+application+'&room='+room+'&secure='+secure;
+		socket.emit('p2', toto);
 	});
 });

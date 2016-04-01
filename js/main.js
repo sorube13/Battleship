@@ -34,12 +34,12 @@ var pc_config = webrtcDetectedBrowser === 'firefox' ?
   {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
 //var pc_config;
 
-var ident= "sorube";
+/*var ident= "sorube";
 var secret= "3ba84e92-dc9f-11e5-be0d-27778885886f";
 var domain= "www.silvia-battleship.com";
 var application= "default";
 var room= 'default';
-var secure = 1;
+var secure = 1;*/
 
 function createCORSRequest(method, url) {
   var xhr = new XMLHttpRequest();
@@ -54,7 +54,7 @@ function createCORSRequest(method, url) {
   return xhr;
 }
 
-var url = 'https://service.xirsys.com/ice';
+/*var url = 'https://service.xirsys.com/ice';
 var xhr = createCORSRequest('POST', url);
 xhr.onload = function() {
     var iceServers = JSON.parse(xhr.responseText).d.iceServers;
@@ -66,7 +66,7 @@ xhr.onerror = function() {
 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
 xhr.send('ident='+ident+'&secret='+secret+'&domain='+domain+'&application='+application+'&room='+room+'&secure='+secure);
-
+*/
 
 // Peer Connection contraints: (i) use DTLS;
 var pc_constraints = {
@@ -98,6 +98,7 @@ var socket = io.connect();
 if (room !== '') {
   console.log('Create or join room', room);
   socket.emit('create or join', room);
+  socket.emit('test');
 }
 
 // Set getUserMedia constraints
@@ -189,6 +190,22 @@ socket.on('message', function (message){
   } else if (message === 'bye' && isStarted) {
     handleRemoteHangup();
   }
+});
+
+socket.on('p2', function(toto){
+  var url = 'https://service.xirsys.com/ice';
+  var xhr = createCORSRequest('POST', url);
+  xhr.onload = function() {
+      var iceServers = JSON.parse(xhr.responseText).d.iceServers;
+      pc_config.iceServers = iceServers;
+  };
+  xhr.onerror = function() {
+      console.error('Woops, there was an error making xhr request.');
+  };
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+  xhr.send(toto);
+
 });
 ////////////////////////////////////////////////
 
