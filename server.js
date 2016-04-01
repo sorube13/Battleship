@@ -1,8 +1,8 @@
-var ident= "xxxxx";
-var secret= "xxxxx";
-var domain= "xxxxx";
-var application= "xxxxx";
-var room= 'xxxxx';
+var ident= "sorube";
+var secret= "3ba84e92-dc9f-11e5-be0d-27778885886f";
+var domain= "www.silvia-battleship.com";
+var application= "default";
+var room= 'default';
 var secure = 1;
 
 var static = require('node-static');
