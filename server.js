@@ -51,8 +51,8 @@ io.sockets.on('connection', function (socket){
 		socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
 	});
 
-	socket.on('test', function(){
-		var toto = 'ident='+ident+'&secret='+secret+'&domain='+domain+'&application='+application+'&room='+room+'&secure='+secure;
-		socket.emit('p2', toto);
+	socket.on('getCred', function(){
+		var cred = 'ident='+ident+'&secret='+secret+'&domain='+domain+'&application='+application+'&room='+room+'&secure='+secure;
+		socket.emit('ICE Candidates', cred);
 	});
 });
