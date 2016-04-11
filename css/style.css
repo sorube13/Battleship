@@ -1,0 +1,40 @@
+html, body {
+    height: 100%;
+}
+ 
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #E6E6FA
+}
+
+
+#boardContainer {
+    height: 90%;
+    width: 70%;
+    background: #e6e0cf;
+    float: right;
+}
+
+#videos {
+    height: 90%;
+    width: 30%;
+    float: left;
+}
+
+#localVideo{
+	padding-left: 10%;
+	padding-right: 10%;
+	padding-bottom: 10%;
+	height: -moz-min-content;
+	width: -moz-available;
+}
+
+
+
+
+#remoteVideo{
+	padding: 10% 10%;
+    height: -moz-min-content;
+	width: -moz-available;
+}

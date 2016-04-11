@@ -9,27 +9,51 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+
 
 <script src='/socket.io/socket.io.js'></script>
 <script src='js/lib/adapter.js'></script>
 
 <meta charset="UTF-8"> 
-<title>WebRTC client</title>
+<title>Battleship</title>
 
 </head>
 
-<body style="background-color: #E6E6FA">
+<body>
 <h1 id="roomTitle" class="bg-primary"><b>Welcome to Room: <b></h1>
 
-<div id="container" class="container-fluid">
-  <div id="videos" class="row">
-    <video class="col-xs-6 col-sm-6 col-md-4" id="localVideo" muted autoplay></video>
-    <video  class="col-xs-6 col-sm-6 col-md-4" id="remoteVideo" autoplay></video>
+
+<!-- <div id="container" class="container-fluid">
+	<div class="row">
+	  <div id="videos" class="row">
+	    <video  class="col-xs-3 col-sm-3 col-md-3" id="remoteVideo" autoplay></video>
+	    <p>
+	    <video class="col-xs-3 col-sm-2 col-md-3" id="localVideo" muted autoplay></video>
+	  </div>
   </div>
-</div>
+  <div class="row">
+  	<div id="boardContainer" class="col-xs-6 col-sm-6 col-md-4">
+		</div>
+  </div>
+</div> -->
 
 
-<script src="js/main.js"></script>
+  <div id="videos" >
+  	<video id="remoteVideo" autoplay></video>
+  	<video id="localVideo" muted autoplay></video>
+  </div>
+  <div id="boardContainer">
+	</div>
+
+
+
+<script src="js/mainWebRTC.js"></script>
+<script src="js/three/three.js"></script>
+<script src="js/three/OrbitControls.js"></script>
+<script src="js/Game.js"></script>
+<script src="js/BoardController.js"></script>
+<script src="js/mainWebGL.js"></script>
 
 </body>
 </html>
