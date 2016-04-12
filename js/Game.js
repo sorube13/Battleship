@@ -53,49 +53,49 @@ BATTLESHIP.Game = function(options){
 
         piece = {
             type: BATTLESHIP.CARRIER,
-            orientation: 1, // 1: horizontal 0: vertical
+            orientation: Math.round(Math.random()), // 1: horizontal 0: vertical
         };
         piece.pos = setRandomPos(piece);
         placePiece(piece);
        
         piece = {
             type: BATTLESHIP.BATTLESHIP,
-            orientation: 0, // 1: horizontal 0: vertical
+            orientation: Math.round(Math.random() ), // 1: horizontal 0: vertical
         };
         piece.pos = setRandomPos(piece);
         placePiece(piece);
 
         piece = {
             type: BATTLESHIP.CRUISER,
-            orientation: 1, // 1: horizontal 0: vertical
+            orientation: Math.round(Math.random() ), // 1: horizontal 0: vertical
         };
         piece.pos = setRandomPos(piece);
         placePiece(piece);
 
         piece = {
             type: BATTLESHIP.DESTROYER,
-            orientation: 1, // 1: horizontal 0: vertical
+            orientation: Math.round(Math.random() ), // 1: horizontal 0: vertical
         };
         piece.pos = setRandomPos(piece);
         placePiece(piece);
 
         piece = {
             type: BATTLESHIP.DESTROYER,
-            orientation: 0, // 1: horizontal 0: vertical
+            orientation: Math.round(Math.random() ), // 1: horizontal 0: vertical
         };
         piece.pos = setRandomPos(piece);
         placePiece(piece);
 
         piece = {
             type: BATTLESHIP.SUBMARINE,
-            orientation: 1, // 1: horizontal 0: vertical
+            orientation: Math.round(Math.random() ), // 1: horizontal 0: vertical
         };
         piece.pos = setRandomPos(piece);
         placePiece(piece);
 
         piece = {
             type: BATTLESHIP.SUBMARINE,
-            orientation: 1, // 1: horizontal 0: vertical
+            orientation: Math.round(Math.random() ), // 1: horizontal 0: vertical
         };
         piece.pos = setRandomPos(piece);
         placePiece(piece);
@@ -126,11 +126,12 @@ BATTLESHIP.Game = function(options){
                 var x = Math.floor((Math.random() * 10));
                 var y = Math.max(Math.floor((Math.random() * 10 - length)), 0);
             }
-
             for(var i=0; i<length; i++) {
                 if(piece.orientation === 1 && myBoard[x+i][y] !== 0){
+                    done = false;
                     break;
                 } else if(piece.orientation === 0 && myBoard[x][y + i] !== 0){
+                    done = false;
                     break;
                 } else{
                     done = true;
