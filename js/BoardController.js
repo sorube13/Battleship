@@ -281,7 +281,7 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(newPiece);
         board[target[0]][target[1]] = 1;
         myTurn = true;
-        renderer.domElement.addEventListener("click", onMouseClick, false);
+        // renderer.domElement.addEventListener("click", onMouseClick, false);
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
 
@@ -294,7 +294,7 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(newPiece);
         board[target[0]][target[1]] = 'x';
         myTurn = true;
-        renderer.domElement.addEventListener("click", onMouseClick, false);
+        // renderer.domElement.addEventListener("click", onMouseClick, false);
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
     }
@@ -309,7 +309,7 @@ BATTLESHIP.BoardController = function (options) {
         myTurn = false;
         scene.remove(myTurnMsg);
         scene.add(oppTurnMsg);
-        renderer.domElement.addEventListener("click", onMouseClick, false);
+        // renderer.domElement.addEventListener("click", onMouseClick, false);
 
     }
 
@@ -323,7 +323,7 @@ BATTLESHIP.BoardController = function (options) {
         myTurn = false;
         scene.remove(myTurnMsg);
         scene.add(oppTurnMsg);
-        renderer.domElement.addEventListener("click", onMouseClick, false);
+        // renderer.domElement.addEventListener("click", onMouseClick, false);
     }
     
     /**********************************************************************************************/
@@ -697,11 +697,11 @@ BATTLESHIP.BoardController = function (options) {
                 }
             }
         }else{ // phase 2: game
-            if(isMouseOnOppBoard(mouse3D)){
+            if(isMouseOnOppBoard(mouse3D) && myTurn){
                 target = [ Math.floor(mouse3D.x / squareSize) , Math.floor((squareSize * 11 - mouse3D.y) / squareSize)] 
                 if(callbacks.selectTarget){
                     callbacks.selectTarget(target);
-                    renderer.domElement.removeEventListener('click', onMouseClick, false);
+                    //renderer.domElement.removeEventListener('click', onMouseClick, false);
                     
                 }
             }
