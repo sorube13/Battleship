@@ -29,7 +29,7 @@ io.sockets.on('connection', function (socket){
 	socket.on('message', function (message) {
 		log('Got message:', message);
     // for a real app, would be room only (not broadcast)
-		socket.broadcast.emit('message', message);
+		socket.broadcast.to(message.channel).emit('message', message);
 	});
 
 	socket.on('create or join', function (room) {
@@ -48,8 +48,8 @@ io.sockets.on('connection', function (socket){
 		} else { // max two clients
 			socket.emit('full', room);
 		}
-		socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
-		socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
+		// socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
+		// socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
 	});
 
 	socket.on('getCred', function(){
