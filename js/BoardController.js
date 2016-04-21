@@ -197,7 +197,6 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(text); 
     }
 
-
     this.movePiece = function(from, to, initSet){
         var pieceMesh = selectedPiece.obj; // board[from[0]][from[1]].pieceMesh;
         var piece = selectedPiece.pieceObj;// board[from[0]][from[1]].piece;
@@ -215,12 +214,18 @@ BATTLESHIP.BoardController = function (options) {
         if(piece.type % 2){ // if odd
             pieceMesh.position.x = toWorldPos.x;
             pieceMesh.position.z = toWorldPos.z; 
-
+            if(piece.orientation === 1){
+                piece.pos[0] = to[0] - Math.floor(piece.type / 2);
+                piece.pos[1] = to[1];
+            } else{
+                piece.pos[0] = to[0];
+                piece.pos[1] = to[1] - Math.floor(piece.type / 2);
+            }
+            
         } else{
             if(piece.orientation === 1){
                 pieceMesh.position.x = toWorldPos.x + squareSize / 2;
                 pieceMesh.position.z = toWorldPos.z; 
-
                 piece.pos[0] = to[0] - piece.type / 2 + 1;
                 piece.pos[1] = to[1];
             } else{
@@ -536,7 +541,6 @@ BATTLESHIP.BoardController = function (options) {
         callback();
     }
 
-
     /**
      * Initialize the listeners.
      */
@@ -562,51 +566,6 @@ BATTLESHIP.BoardController = function (options) {
         lights.movingLight.position.z = camera.position.z;
         
         renderer.render(scene, camera);
-    }
-
-    function onMouseDown(event){
-
-        var mouse3D = getMouse3D(event);
-
-        if(isMouseOnBoard(mouse3D)){
-            if(isPieceOnMousePosition(mouse3D)){
-                selectPiece(mouse3D);
-                renderer.domElement.addEventListener("mousemove", onMouseMove, false);
-            }
-            cameraController.userRotate = false;
-        }
-    }
-
-    function onMouseUp(event){
-        renderer.domElement.removeEventListener('mousemove', onMouseMove, false);
-
-        var mouse3D = getMouse3D(event);
-
-        if(isMouseOnBoard(mouse3D) && selectedPiece){
-            var toBoardPos = worldToBoard(mouse3D);
-
-            if(toBoardPos[0] === selectedPiece.boardPos[0] && toBoardPos[1] === selectedPiece.boardPos[1]){
-                deselectPiece();
-            } else{
-                instance.movePiece(selectedPiece.boardPos, toBoardPos);
-                selectedPiece = null;
-            }
-        } else{
-            deselectPiece();
-        }
-
-        cameraController.userRotate = true;
-    }
-
-    function onMouseMove(event){
-        var mouse3D = getMouse3D(event);
-
-        if(selectedPiece){
-            selectedPiece.obj.position.x= mouse3D.x;
-            selectedPiece.obj.position.z = mouse3D.z;
-            
-            //selectedPiece.obj.children[0].position.y = 0.75;
-        }
     }
 
     /**
@@ -864,7 +823,6 @@ BATTLESHIP.BoardController = function (options) {
         }
     }
 
-
     /**
      * Removes piece and mesh from the board according to the piece's previous position.
      * @param {Object} piece The piece object.
@@ -882,7 +840,6 @@ BATTLESHIP.BoardController = function (options) {
             }       
         }
     }
-
 
     /**
      * Finds the coordinates of the mouse in the scene 
