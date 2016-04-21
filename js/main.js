@@ -32,8 +32,6 @@ var remoteStream;
 // Peer Connection
 var pc;
 
-var socket = null;
-
 // Peer Connection ICE protocol configuration (either Firefox or Chrome)
 var pc_config = webrtcDetectedBrowser === 'firefox' ?
     {'iceServers':[{'urls':'stun:23.21.150.121'}]} : // IP address
@@ -240,7 +238,6 @@ function createPeerConnection() {
             // Create a reliable data channel
             sendChannel = pc.createDataChannel("sendDataChannel",
               {reliable: true});
-            console.log('Created sendChannel' , sendChannel);
             trace('Created send data channel');
         } catch (e) {
             alert('Failed to create data channel. ');
@@ -261,7 +258,6 @@ function sendData(data) {
     if(isInitiator) sendChannel.send(data);
     else receiveChannel.send(data);
     trace('Sent data: ' + data);
-    console.log('data:', data, typeof(data));
 }
 
 // Handlers...
@@ -276,7 +272,6 @@ function gotReceiveChannel(event) {
 
 function handleMessage(event) {
     trace('Received message: ' + event.data);
-    console.log('Received message', event, typeof(event.data));
     game.receiveFromOpponent(event.data);
 }
 

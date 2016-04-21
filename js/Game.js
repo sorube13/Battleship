@@ -55,6 +55,35 @@ BATTLESHIP.Game = function(options){
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
+    var myShipsHit = {
+        carrier: 0,
+        battleship: 0,
+        cruiser: 0,
+        destroyer1: 0,
+        destroyer2: 0,
+        submarine1: 0,
+        submarine2: 0
+    };
+
+
+    var oppShipsHit = {
+        carrier: 0,
+        battleship: 0,
+        cruiser: 0,
+        destroyer1: 0,
+        destroyer2: 0,
+        submarine1: 0,
+        submarine2: 0
+    };
+
+    var numShips = 7;
+
+    var numMyShipsHit = 0;
+    var numOppShipsHit = 0;
+
+
+    ///////////////////////////////////////////////////////////////////////
+
     /**
      * Initialize boardController object
      */
@@ -376,12 +405,10 @@ BATTLESHIP.Game = function(options){
     }
 
     function sendTarget(pos){
-        console.log('target:', pos);
         sendData(pos);
     }
 
     function sendId(){
-        console.log('Sending data: ', data);
         var data = id;
         sendData(data);
     }
@@ -391,7 +418,6 @@ BATTLESHIP.Game = function(options){
     }
 
     this.receiveFromOpponent = function(data){
-        console.log('data', data);
         if(!oppId){
             oppId = Number(data);
             if(id > oppId){
@@ -402,20 +428,115 @@ BATTLESHIP.Game = function(options){
             boardController.setTurn(myTurn);
         } else{
             if(myTurn){
-                console.log("hit : true or false?")
+                data = data.split(" ");
+                if(data[0] == 'true'){
+                    addHit(data[1], oppShipsHit);
+                    boardController.oppBoardHit();
+                }else{
+                    boardController.oppBoardMiss();
+                }
+                myTurn = false;
             } else{
-                console.log('check hit')
+                data = data.split(",");
+                var target = [Number(data[0]), Number(data[1])];
+                checkTarget(target);
+
             }
         }
     }
 
+    function checkTarget(target){
+        if(myBoard[target[0]][target[1]] !== 0){
+            sendData(true + " " +myBoard[target[0]][target[1]].id);
+            addHit(myBoard[target[0]][target[1]].id, myShipsHit);
+            myBoard[target[0]][target[1]] = 1;
+            boardController.myBoardHit(target);
+        } else{
+            sendData(false);
+            myBoard[target[0]][target[1]] = "x";
+            boardController.myBoardMiss(target);
+        }
+        myTurn = true;
+    }
 
+    function addHit(type, myList){
+        type = Number(type);
+        switch(type){
+            case 1:
+                myList.carrier++;
+                if(myList.carrier === BATTLESHIP.CARRIER){
+                    console.log("carrier sunk");
+                    addNumHits(myList);
+                }
+                break;
+            case 2:
+                myList.battleship++;
+                if(myList.battleship === BATTLESHIP.BATTLESHIP){
+                    console.log("battleship sunk");
+                    addNumHits(myList);
+                }
+                break;
+            case 3:
+                myList.cruiser++;
+                if(myList.cruiser === BATTLESHIP.CRUISER){
+                    console.log("cruiser sunk");
+                    addNumHits(myList);
+                }
+                break;
+            case 4:
+                myList.destroyer1++;
+                if(myList.destroyer1 === BATTLESHIP.DESTROYER){
+                    console.log("destroyer 1 sunk");
+                    addNumHits(myList);
+                }
+                break;
+            case 5:
+                myList.destroyer2++;
+                if(myList.destroyer2 === BATTLESHIP.DESTROYER){
+                    console.log("destroyer 2 sunk");
+                    addNumHits(myList);
+                }
+                break;
+            case 6:
+                myList.submarine1++;
+                if(myList.submarine1 === BATTLESHIP.SUBMARINE){
+                    console.log("submarine 1 sunk");
+                    addNumHits(myList);
+                }
+                break;
+            case 7:
+                myList.submarine2++;
+                if(myList.submarine2 === BATTLESHIP.SUBMARINE){
+                    console.log("submarine 2 sunk");
+                    addNumHits(myList);
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    function addNumHits(myList){
+        if(myList === myShipsHit){
+            numMyShipsHit++;
+            if(numMyShipsHit === numShips){
+                console.log("GAME END: YOU LOST");
+                alert("GAME END: YOU LOST");
+            }
+        } else{
+            numOppShipsHit++;
+            console.log("numOppShipsHit:", numOppShipsHit);
+            if(numOppShipsHit === numShips){
+                console.log("GAME END: YOU WON!");
+                alert("GAME END: YOU WON!");
+            }
+        }
+    }
     
 
     init();
 
 }
 
-// Game.prototype.receiveTarget = function(pos){
-//     console.log('target from other person is:' , pos)
-// } 
+
