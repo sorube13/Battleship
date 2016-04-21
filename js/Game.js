@@ -446,17 +446,19 @@ BATTLESHIP.Game = function(options){
     }
 
     function checkTarget(target){
-        if(myBoard[target[0]][target[1]] !== 0){
-            sendData(true + " " +myBoard[target[0]][target[1]].id);
-            addHit(myBoard[target[0]][target[1]].id, myShipsHit);
-            myBoard[target[0]][target[1]] = 1;
-            boardController.myBoardHit(target);
-        } else{
-            sendData(false);
-            myBoard[target[0]][target[1]] = "x";
-            boardController.myBoardMiss(target);
+        if((myBoard[target[0]][target[1]] !== 1) && (myBoard[target[0]][target[1]] !== 'x')){
+            if(myBoard[target[0]][target[1]] !== 0){
+                sendData(true + " " +myBoard[target[0]][target[1]].id);
+                addHit(myBoard[target[0]][target[1]].id, myShipsHit);
+                myBoard[target[0]][target[1]] = 1;
+                boardController.myBoardHit(target);
+            } else{
+                sendData(false);
+                myBoard[target[0]][target[1]] = "x";
+                boardController.myBoardMiss(target);
+            }
+            myTurn = true;
         }
-        myTurn = true;
     }
 
     function addHit(type, myList){
