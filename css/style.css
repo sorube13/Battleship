@@ -49,3 +49,22 @@ tbody{
 #remoteVideo{
 
 }
+
+@media screen and (max-width: 600px) {
+  #videos {
+    visibility: hidden;
+    clear: both;
+    float: left;
+    width: 1%;
+    display: none;
+  }
+
+  #boardController{
+    visibility: hidden;
+    display: none;
+    height: 100%;
+    width: 99%;
+    background: #e6e0cf;
+
+  }
+}
