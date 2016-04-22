@@ -4,37 +4,48 @@ html, body {
  
 body {
     margin: 0;
-    /*overflow: hidden;*/
+    overflow: hidden;
     background-color: #E6E6FA
 }
 
 
+td{
+    display:inline-block;
+    height:50%;
+    width:100%
+}
+tbody{
+    display: table;
+    height: inherit;  
+}
+
+
 #boardContainer {
-    height: 90%;
-    width: 70%;
+    display:inline-block;
+    height: 100%;
+    width: 75%;
     background: #e6e0cf;
     float: right;
 }
 
 #videos {
-    height: 90%;
-    width: 30%;
+   /* table-layout: fixed;
+    border-collapse: collapse;*/
+    padding-left: 1%;
+    display:inline-block;
+    height: 100%;
+    width: 16%;
     float: left;
 }
 
-/*#localVideo{
-	padding-left: 10%;
-	padding-right: 10%;
-	padding-bottom: 10%;
-	height: -moz-min-content;
-	width: -moz-available;
+#localVideo{
+
+	
 }
 
 
 
 
 #remoteVideo{
-	padding: 10% 10%;
-    height: -moz-min-content;
-	width: -moz-available;
-}*/
+
+}
