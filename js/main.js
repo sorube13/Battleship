@@ -75,7 +75,7 @@ var sdpConstraints = webrtcDetectedBrowser === 'firefox' ?
 
 // Let's get started: prompt user for input (room name)
 var room = prompt('Enter room name:');
-if(room === null){
+if(room === null  || room =""){
     room = "foo";
 }
 document.querySelector('#roomTitle').innerHTML += room;
