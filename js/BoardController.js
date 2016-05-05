@@ -175,42 +175,12 @@ BATTLESHIP.BoardController = function (options) {
         var pieceLoc
         switch(piece.type){
             case 1:
-                pieceLoc = 'submarine.dae';
-                //pieces.submarine = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
-                //pieceMesh = pieces.submarine;
-                loader.load(assetsUrl + pieceLoc, function(result){
-                    pieceMesh = result.scene;
-                    pieceMesh.rotation.x += -Math.PI/2;
-                    pieceMesh.scale.y =  0.01;
-                    pieceMesh.scale.x = 0.0033;
-                    pieceMesh.scale.z = 0.017;
-                    var pos = initBoardPieceToWorld(piece)
-                    pieceMesh.position.set(pos.x, 0, pos.z);
-                    placePiece(piece, pieceMesh, initBoard);
-
-
-                    console.log('in sub:',pieceMesh);
-                    scene.add(pieceMesh);
-                });
-                //pieceMesh = ships.submarine;
+                pieces.submarine = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
+                pieceMesh = pieces.submarine;
                 break;
             case 2:
-                // pieces.destroyer = new THREE.Mesh(geometries.destroyerGeom, materials.blackPieceMaterial);
-                // pieceMesh = pieces.destroyer;
-                pieceLoc = 'cruiser.dae';
-                loader.load(assetsUrl + pieceLoc, function(result){
-                    pieceMesh = result.scene;
-                    pieceMesh.rotation.x += -Math.PI/2;
-                    // pieceMesh.rotation.z += Math.PI / 2;
-                    // pieceMesh.scale.y =  0.01;
-                    // pieceMesh.scale.x = 0.1;
-                    // pieceMesh.scale.z = 0.0001;
-                    var pos = initBoardPieceToWorld(piece)
-                    console.log('pos',pos);
-                    pieceMesh.position.set(pos.x, 0, pos.z);
-                    placePiece(piece, pieceMesh, initBoard);
-                    scene.add(pieceMesh);
-                });
+                pieces.destroyer = new THREE.Mesh(geometries.destroyerGeom, materials.blackPieceMaterial);
+                pieceMesh = pieces.destroyer;
                 break;
             case 3:
                 pieces.cruiser = new THREE.Mesh(geometries.cruiserGeom, materials.blackPieceMaterial);
@@ -227,16 +197,15 @@ BATTLESHIP.BoardController = function (options) {
             default:
                 break;
         }
-        // if((piece.type !== 1) || (piece.type !== 2)){
-        //     console.log('type:', piece.type, 'pieceMesh:', pieceMesh);
-        //     var pos = initBoardPieceToWorld(piece)
-        //     pieceMesh.position.set(pos.x, pos.y, pos.z);
-        //     if(piece.orientation === 0){
-        //         pieceMesh.rotation.y = 90 * Math.PI / 180; 
-        //     }
-        //     placePiece(piece, pieceMesh, initBoard);
-        //     scene.add(pieceMesh);
-        // }
+        console.log('type:', piece.type, 'pieceMesh:', pieceMesh);
+        var pos = initBoardPieceToWorld(piece)
+        pieceMesh.position.set(pos.x, pos.y, pos.z);
+        if(piece.orientation === 0){
+            pieceMesh.rotation.y = 90 * Math.PI / 180; 
+        }
+        placePiece(piece, pieceMesh, initBoard);
+        scene.add(pieceMesh);
+    
     }
 
     this.movePiece = function(from, to, initSet){
