@@ -45,6 +45,12 @@ BATTLESHIP.BoardController = function (options) {
     /** @type Object */
     var geometries = {};
 
+    /** @type Object */
+    var pieces = {};
+
+    /** @type Object */
+    var ships = {};
+
     /** @type THREE.Mesh */
     var boardModel;
     
@@ -164,37 +170,73 @@ BATTLESHIP.BoardController = function (options) {
     };
 
     this.addPiece = function (piece){
+        var loader = new THREE.ColladaLoader();
         var pieceMesh;
+        var pieceLoc
         switch(piece.type){
             case 1:
-                pieceMesh = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
+                pieceLoc = 'submarine.dae';
+                //pieces.submarine = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
+                //pieceMesh = pieces.submarine;
+                loader.load(assetsUrl + pieceLoc, function(result){
+                    pieceMesh = result.scene;
+                    pieceMesh.rotation.x += -Math.PI/2;
+                    pieceMesh.scale.y =  0.01;
+                    pieceMesh.scale.x = 0.0033;
+                    pieceMesh.scale.z = 0.017;
+                    var pos = initBoardPieceToWorld(piece)
+                    pieceMesh.position.set(pos.x, 0, pos.z);
+                    placePiece(piece, pieceMesh, initBoard);
+
+
+                    console.log('in sub:',pieceMesh);
+                    scene.add(pieceMesh);
+                });
+                //pieceMesh = ships.submarine;
                 break;
             case 2:
-                pieceMesh = new THREE.Mesh(geometries.destroyerGeom, materials.blackPieceMaterial);
+                // pieces.destroyer = new THREE.Mesh(geometries.destroyerGeom, materials.blackPieceMaterial);
+                // pieceMesh = pieces.destroyer;
+                pieceLoc = 'cruiser.dae';
+                loader.load(assetsUrl + pieceLoc, function(result){
+                    pieceMesh = result.scene;
+                    pieceMesh.rotation.x += -Math.PI/2;
+                    // pieceMesh.rotation.z += Math.PI / 2;
+                    // pieceMesh.scale.y =  0.01;
+                    // pieceMesh.scale.x = 0.1;
+                    // pieceMesh.scale.z = 0.0001;
+                    var pos = initBoardPieceToWorld(piece)
+                    console.log('pos',pos);
+                    pieceMesh.position.set(pos.x, 0, pos.z);
+                    placePiece(piece, pieceMesh, initBoard);
+                    scene.add(pieceMesh);
+                });
                 break;
             case 3:
-                pieceMesh = new THREE.Mesh(geometries.cruiserGeom, materials.blackPieceMaterial);
+                pieces.cruiser = new THREE.Mesh(geometries.cruiserGeom, materials.blackPieceMaterial);
+                pieceMesh = pieces.cruiser;
                 break;
             case 4:
-                pieceMesh = new THREE.Mesh(geometries.battleshipGeom, materials.blackPieceMaterial);
+                pieces.battleship = new THREE.Mesh(geometries.battleshipGeom, materials.blackPieceMaterial);
+                pieceMesh = pieces.battleship;
                 break;
             case 5:
-                pieceMesh = new THREE.Mesh(geometries.carrierGeom, materials.blackPieceMaterial);
+                pieces.carrier = new THREE.Mesh(geometries.carrierGeom, materials.blackPieceMaterial);
+                pieceMesh = pieces.carrier;
                 break;
             default:
                 break;
         }
-        pieceMesh.position = initBoardPieceToWorld(piece);
-        if(piece.orientation === 0){
-            pieceMesh.rotation.y = 90 * Math.PI / 180; 
-        }
-
-        placePiece(piece, pieceMesh, initBoard);
-
-        scene.add(pieceMesh);
-        var text = new THREE.Mesh(geometries.textGeo);
-        text.position = new THREE.Vector3(-50, 50, 0);
-        scene.add(text); 
+        // if((piece.type !== 1) || (piece.type !== 2)){
+        //     console.log('type:', piece.type, 'pieceMesh:', pieceMesh);
+        //     var pos = initBoardPieceToWorld(piece)
+        //     pieceMesh.position.set(pos.x, pos.y, pos.z);
+        //     if(piece.orientation === 0){
+        //         pieceMesh.rotation.y = 90 * Math.PI / 180; 
+        //     }
+        //     placePiece(piece, pieceMesh, initBoard);
+        //     scene.add(pieceMesh);
+        // }
     }
 
     this.movePiece = function(from, to, initSet){
@@ -260,6 +302,7 @@ BATTLESHIP.BoardController = function (options) {
     this.setTurn = function(turn){
         myTurn = turn;
         recievedId = true;
+        scene.remove(waitMsg);
         if(battle){
             if(myTurn){
                 scene.add(myTurnMsg);
@@ -277,11 +320,10 @@ BATTLESHIP.BoardController = function (options) {
     this.myBoardHit = function(target){
         var pos = boardToWorld(target);
         var newPiece = hitPiece.clone();
-        newPiece.position = pos;
+        newPiece.position.set(pos.x, pos.y, pos.z);
         scene.add(newPiece);
         board[target[0]][target[1]] = 1;
         myTurn = true;
-        // renderer.domElement.addEventListener("click", onMouseClick, false);
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
 
@@ -290,7 +332,7 @@ BATTLESHIP.BoardController = function (options) {
     this.myBoardMiss = function(target){
         var pos = boardToWorld(target);
         var newPiece = missPiece.clone();
-        newPiece.position = pos;
+        newPiece.position.set(pos.x, pos.y, pos.z);
         scene.add(newPiece);
         board[target[0]][target[1]] = 'x';
         myTurn = true;
@@ -302,7 +344,7 @@ BATTLESHIP.BoardController = function (options) {
     this.oppBoardHit = function(){
         var pos = oppBoardToWorld(target);
         var newPiece = hitPiece.clone();
-        newPiece.position = pos;
+        newPiece.position.set(pos.x, pos.y, pos.z);
         newPiece.rotation.x = 90 * Math.PI / 180;
         scene.add(newPiece);
         oppBoard[target[0]][target[1]] = 1;
@@ -316,14 +358,14 @@ BATTLESHIP.BoardController = function (options) {
     this.oppBoardMiss = function(){
         var pos = oppBoardToWorld(target);
         var newPiece = missPiece.clone();
-        newPiece.position = pos;
+        newPiece.position.set(pos.x, pos.y, pos.z);
         newPiece.rotation.x = 90 * Math.PI / 180;
         scene.add(newPiece);
         oppBoard[target[0]][target[1]] = 'x';
         myTurn = false;
         scene.remove(myTurnMsg);
         scene.add(oppTurnMsg);
-        // renderer.domElement.addEventListener("click", onMouseClick, false);
+        //renderer.domElement.addEventListener("click", onMouseClick, false);
     }
     
     /**********************************************************************************************/
@@ -351,11 +393,15 @@ BATTLESHIP.BoardController = function (options) {
         camera = new THREE.PerspectiveCamera(35, viewWidth / viewHeight, 1, 1000);
         camera.position.set(squareSize * 5, 200, 300);
         cameraController = new THREE.OrbitControls(camera, containerEl);
-        cameraController.center = new THREE.Vector3(squareSize * 5, squareSize * 2, 0);
+        cameraController.target = new THREE.Vector3(squareSize * 5, squareSize * 2, 0);
         //
         scene.add(camera);
         
         containerEl.appendChild(renderer.domElement);
+
+        // Set the background color of the scene.
+        renderer.setClearColor(new THREE.Color(0x333F47, 1));
+        //var winResize   = new THREEx.WindowResize(renderer, camera)
     }
     
     /**
@@ -371,13 +417,13 @@ BATTLESHIP.BoardController = function (options) {
         lights.whiteSideLight = new THREE.SpotLight();
         lights.whiteSideLight.position.set( squareSize * 5, 100, squareSize * 5 + 200);
         lights.whiteSideLight.intensity = 0.8;
-        lights.whiteSideLight.shadowCameraFov = 55;
+        lights.whiteSideLight.shadow.camera.fov = 55;
 
         // black's side light
         lights.blackSideLight = new THREE.SpotLight();
         lights.blackSideLight.position.set( squareSize * 5, 100, squareSize * 5 - 200);
         lights.blackSideLight.intensity = 0.8;
-        lights.blackSideLight.shadowCameraFov = 55;
+        lights.blackSideLight.shadow.camera.fov = 55;
         
         // light that will follow the camera position
         lights.movingLight = new THREE.PointLight(0xf9edc9);
@@ -404,13 +450,12 @@ BATTLESHIP.BoardController = function (options) {
         // ground material
         materials.groundMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture(assetsUrl + 'ground.png')
+            map: THREE.TextureLoader(assetsUrl + 'ground.png')
         });
         // grid
         materials.squareMaterial = new THREE.MeshPhongMaterial({
             color: 0xd3d3d3,
-            wireframe   : true,
-            side: THREE.DoubleSide
+            
         });
      
         // black piece material
@@ -427,7 +472,7 @@ BATTLESHIP.BoardController = function (options) {
 
         materials.startMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture(assetsUrl + 'start.png')
+            map:THREE.ImageUtils.loadTexture(assetsUrl + 'start.png')
         });
 
         materials.waitMaterial = new THREE.MeshBasicMaterial({
@@ -462,7 +507,7 @@ BATTLESHIP.BoardController = function (options) {
      * @param {Object} callback Function to call when the objects have been loaded.
      */
     function initObjects(callback) {
-        var boardModel = new THREE.Mesh(new THREE.CubeGeometry(squareSize * 10 + 20, 5, squareSize * 10 + 20), materials.boardMaterial);
+        boardModel = new THREE.Mesh(new THREE.CubeGeometry(squareSize * 10 + 20, 5, squareSize * 10 + 20), materials.boardMaterial);
         boardModel.position.set(squareSize * 5, -0.02, squareSize * 5);
         scene.add(boardModel);
       
@@ -475,13 +520,13 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(groundModel);
 
         // create the board squares
-        var squareMaterial = materials.squareMaterial;
+        var squareMaterial = materials.boardMaterial;
 
         for (var row = 0; row < 10; row++) {
             for (var col = 0; col < 10; col++) {
                // squareMaterial = materials.squareMaterial;
          
-                var square = new THREE.Mesh(new THREE.PlaneGeometry(squareSize, squareSize, 1, 1), squareMaterial);
+                var square = new THREE.Mesh(new THREE.PlaneGeometry(squareSize, squareSize, 1, 0), squareMaterial);
          
                 square.position.x = col * squareSize + squareSize / 2;
                 square.position.z = row * squareSize + squareSize / 2;
@@ -489,8 +534,21 @@ BATTLESHIP.BoardController = function (options) {
                 square.position.y = 2.5;
          
                 square.rotation.x = -90 * Math.PI / 180;
+
+                var egh = new THREE.EdgesHelper( square, 0xd3d3d3 );
+                egh.material.linewidth = 2;
+                egh.position.x = col * squareSize + squareSize / 2;
+                egh.position.z = row * squareSize + squareSize / 2;
+
+                egh.position.y = 2.5;
+         
+                egh.rotation.x = -90 * Math.PI / 180;
+                scene.add( egh );
          
                 scene.add(square);
+
+
+            
             }
         }
 
@@ -499,7 +557,7 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(oppBoardModel);
         
 
-        var oppSquareMaterial = materials.squareMaterial;
+        var oppSquareMaterial = materials.boardMaterial;
 
 
         for (var row = 0; row < 10; row++) {
@@ -513,9 +571,20 @@ BATTLESHIP.BoardController = function (options) {
 
                 square.position.z = 2.5 - 10;
         
+                var egh = new THREE.EdgesHelper( square, 0xd3d3d3 );
+                egh.material.linewidth = 2;
+                egh.position.x = col * squareSize + squareSize / 2;
+                egh.position.z = row * squareSize + squareSize / 2;
+
+                egh.position.y = 2.5;
+         
+                egh.rotation.x = -90 * Math.PI / 180;
+                scene.add( egh );
+         
                 scene.add(square);
             }
         }
+
 
         geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, squareSize - 1, squareSize - 1 );
         geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, squareSize - 1, squareSize - 1);
@@ -529,14 +598,13 @@ BATTLESHIP.BoardController = function (options) {
         missPiece = new THREE.Mesh(geometries.pieceGeom, materials.missMaterial);
 
         text = new THREE.Mesh(geometries.textGeom, materials.textMaterial);
-        text.position = new THREE.Vector3(-50, 50, 0);
+        text.position.set(-50, 50, 0);
         scene.add(text);
 
         myTurnMsg = new THREE.Mesh(geometries.textGeom, materials.myTurnMaterial);
-        myTurnMsg.position= new THREE.Vector3(-50, 50, 0);
+        myTurnMsg.position.set(-50, 50, 0);
         oppTurnMsg = new THREE.Mesh(geometries.textGeom, materials.othersTurnMaterial);
-        oppTurnMsg.position= new THREE.Vector3(-50, 50, 0);
-
+        oppTurnMsg.position.set(-50, 50, 0);
 
         callback();
     }
@@ -550,6 +618,7 @@ BATTLESHIP.BoardController = function (options) {
         domElement.addEventListener('mousedown', onMouseDown, false);
         domElement.addEventListener('mouseup', onMouseUp, false);
         domElement.addEventListener('dblclick', onDoubleClick, false);
+        renderer.domElement.addEventListener("click", onMouseClick, false);
     }
 
   
@@ -586,7 +655,7 @@ BATTLESHIP.BoardController = function (options) {
                 selectPiece(mouse3D, initSet);
                 renderer.domElement.addEventListener("mousemove", onMouseMove, false);
             }
-            cameraController.userRotate = false;
+            cameraController.enabled = false;
         }
     }
 
@@ -621,7 +690,7 @@ BATTLESHIP.BoardController = function (options) {
         }else{
             deselectPiece();
         }
-        cameraController.userRotate = true;
+        cameraController.enabled = true;
         initSet = false;
         
     }
@@ -689,7 +758,7 @@ BATTLESHIP.BoardController = function (options) {
                     }
                 } else{
                     waitMsg = new THREE.Mesh(geometries.textGeom, materials.waitMaterial);
-                    waitMsg.position = new THREE.Vector3(-50, 50, 0);
+                    waitMsg.position.set(-50, 50, 0);
                     scene.add(waitMsg);
                 }
                 if(callbacks.sendId){
@@ -864,7 +933,8 @@ BATTLESHIP.BoardController = function (options) {
         );
 
 
-        projector.unprojectVector(pMouse, camera);
+        //projector.unprojectVector(pMouse, camera);
+        pMouse.unproject(camera);
 
         var cam = camera.position;
         var m = pMouse.y / (pMouse.y - cam.y);
@@ -897,7 +967,7 @@ BATTLESHIP.BoardController = function (options) {
             - ( y / renderer.domElement.clientHeight ) * 2 + 1,
             0.5 );
 
-        projector.unprojectVector(vector, camera);
+        vector.unproject(camera);
 
         var dir = vector.sub( camera.position ).normalize();
 
@@ -1016,7 +1086,7 @@ BATTLESHIP.BoardController = function (options) {
             return;
         }
 
-        selectedPiece.obj.position = selectedPiece.origPosition;
+        selectedPiece.obj.position.set(selectedPiece.origPosition.x, selectedPiece.origPosition.y, selectedPiece.origPosition.z);
         //selectedPiece.obj.children[0].position.y = 0;
 
         selectedPiece = null;
@@ -1102,7 +1172,7 @@ BATTLESHIP.BoardController = function (options) {
         if(communication && (!setting)){
             scene.remove(text);
             startButton = new THREE.Mesh(geometries.textGeom, materials.startMaterial);
-            startButton.position= new THREE.Vector3(-50, 50, 0);
+            startButton.position.set(-50, 50, 0);
             scene.add(startButton);
             renderer.domElement.addEventListener("click", onMouseClick, false);
         }
