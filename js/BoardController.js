@@ -149,6 +149,9 @@ BATTLESHIP.BoardController = function (options) {
     var recievedId = false;
 
     var target;
+
+    var missAudio = new Audio('audio/miss.m4a');
+    var hitAudio = new Audio('audio/hit.m4a');
     /**********************************************************************************************/
     /* Public methods *****************************************************************************/
     
@@ -295,6 +298,7 @@ BATTLESHIP.BoardController = function (options) {
         myTurn = true;
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
+        hitAudio.play();
 
     }
 
@@ -308,6 +312,7 @@ BATTLESHIP.BoardController = function (options) {
         // renderer.domElement.addEventListener("click", onMouseClick, false);
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
+        missAudio.play();
     }
 
     this.oppBoardHit = function(){
@@ -321,7 +326,7 @@ BATTLESHIP.BoardController = function (options) {
         scene.remove(myTurnMsg);
         scene.add(oppTurnMsg);
         // renderer.domElement.addEventListener("click", onMouseClick, false);
-
+        hitAudio.play();
     }
 
     this.oppBoardMiss = function(){
@@ -335,6 +340,7 @@ BATTLESHIP.BoardController = function (options) {
         scene.remove(myTurnMsg);
         scene.add(oppTurnMsg);
         //renderer.domElement.addEventListener("click", onMouseClick, false);
+        missAudio.play();
     }
     
     /**********************************************************************************************/
