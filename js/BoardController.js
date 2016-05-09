@@ -36,6 +36,9 @@ BATTLESHIP.BoardController = function (options) {
     /** @type THREE.OrbitControls */
     var cameraController;
     
+    /** @type HTMLCanvasElement*/
+    var texture_placeholder;
+
     /** @type Object */
     var lights = {};
         
@@ -152,6 +155,7 @@ BATTLESHIP.BoardController = function (options) {
 
     var missAudio = new Audio('audio/miss.m4a');
     var hitAudio = new Audio('audio/hit.m4a');
+
     /**********************************************************************************************/
     /* Public methods *****************************************************************************/
     
@@ -350,6 +354,7 @@ BATTLESHIP.BoardController = function (options) {
      * Initialize some basic 3D engine elements. 
      */
     function initEngine() {
+        var skyBox;
         var viewWidth = containerEl.offsetWidth;
         var viewHeight = containerEl.offsetHeight;
         
@@ -371,12 +376,30 @@ BATTLESHIP.BoardController = function (options) {
         cameraController.target = new THREE.Vector3(squareSize * 5, squareSize * 2, 0);
         //
         scene.add(camera);
+
+        texture_placeholder = document.createElement( 'canvas' );
+        texture_placeholder.width = 128;
+        texture_placeholder.height = 128;
+        var context = texture_placeholder.getContext( '2d' );
+        context.fillStyle = 'rgb( 200, 200, 200 )';
+        context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
+        var materials = [
+            loadTexture( 'images/posx.jpg' ), // right
+            loadTexture( 'images/negx.jpg' ), // left
+            loadTexture( 'images/posy.jpg' ), // top
+            loadTexture( 'images/negy.jpg' ), // bottom
+            loadTexture( 'images/posz.jpg' ), // back
+            loadTexture( 'images/negz.jpg' )  // front
+        ];
+        skyBox = new THREE.Mesh( new THREE.BoxGeometry( 500, 500, 500, 7, 7, 7 ), new THREE.MultiMaterial( materials ) );
+        skyBox.scale.x = - 1;
+        scene.add(skyBox);
         
         containerEl.appendChild(renderer.domElement);
 
         // Set the background color of the scene.
         renderer.setClearColor(new THREE.Color(0x333F47, 1));
-        //var winResize   = new THREEx.WindowResize(renderer, camera)
+        var winResize   = new THREEx.WindowResize(renderer, camera)
     }
     
     /**
@@ -610,6 +633,21 @@ BATTLESHIP.BoardController = function (options) {
         lights.movingLight.position.z = camera.position.z;
         
         renderer.render(scene, camera);
+    }
+
+    /*
+     * Loading skybox texture
+    */
+    function loadTexture( path ) {
+        var texture = new THREE.Texture( texture_placeholder );
+        var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 } );
+        var image = new Image();
+        image.onload = function () {
+            texture.image = this;
+            texture.needsUpdate = true;
+        };
+        image.src = path;
+        return material;
     }
 
     /**
