@@ -156,6 +156,19 @@ BATTLESHIP.BoardController = function (options) {
     var missAudio = new Audio('audio/miss.m4a');
     var hitAudio = new Audio('audio/hit.m4a');
 
+    var missPlane, hitPlane;
+    var splash = false;
+    var hit = false;
+    var newMiss;
+    var missMyBoard;
+    var start = Date.now();
+    var clock = new THREE.Clock();
+
+    var customUniforms, customUniforms2;
+    var missOpp, hitOpp;
+
+
+
     /**********************************************************************************************/
     /* Public methods *****************************************************************************/
     
@@ -204,7 +217,7 @@ BATTLESHIP.BoardController = function (options) {
             default:
                 break;
         }
-        console.log('type:', piece.type, 'pieceMesh:', pieceMesh);
+        //console.log('type:', piece.type, 'pieceMesh:', pieceMesh);
         var pos = initBoardPieceToWorld(piece)
         pieceMesh.position.set(pos.x, pos.y, pos.z);
         if(piece.orientation === 0){
@@ -212,7 +225,6 @@ BATTLESHIP.BoardController = function (options) {
         }
         placePiece(piece, pieceMesh, initBoard);
         scene.add(pieceMesh);
-    
     }
 
     this.movePiece = function(from, to, initSet){
@@ -255,7 +267,7 @@ BATTLESHIP.BoardController = function (options) {
         }
         checkInside();
         placePiece(piece, pieceMesh, board);     
-        pieceMesh.position.y = 7.5;
+        pieceMesh.position.y = 3.48;
     }
     
     this.rotatePiece = function(center){
@@ -295,9 +307,14 @@ BATTLESHIP.BoardController = function (options) {
     
     this.myBoardHit = function(target){
         var pos = boardToWorld(target);
-        var newPiece = hitPiece.clone();
+        //var newPiece = hitPiece.clone();
+        var newPiece = hitPlane.clone();
         newPiece.position.set(pos.x, pos.y, pos.z);
         scene.add(newPiece);
+        hit = true;
+        setTimeout(function(){
+            hit = false;
+        }, 3000);
         board[target[0]][target[1]] = 1;
         myTurn = true;
         scene.remove(oppTurnMsg);
@@ -308,22 +325,34 @@ BATTLESHIP.BoardController = function (options) {
 
     this.myBoardMiss = function(target){
         var pos = boardToWorld(target);
-        var newPiece = missPiece.clone();
-        newPiece.position.set(pos.x, pos.y, pos.z);
+        var newPiece = missPlane.clone();
+        newPiece.position.set(pos.x, 2.61, pos.z);
         scene.add(newPiece);
+        
+        missMyBoard = new THREE.Mesh(geometries.planeGeometry.clone(), materials.waterMaterial);
+        missMyBoard.rotation.x = -0.5*Math.PI;
+        missMyBoard.position.set(pos.x, 2.61, pos.z);
+        scene.add(missMyBoard);
+        splash = true;
+        missAudio.play();
+        setTimeout(function(){
+            splash = false;
+            scene.remove(missMyBoard);
+
+        }, 3000);
         board[target[0]][target[1]] = 'x';
         myTurn = true;
-        // renderer.domElement.addEventListener("click", onMouseClick, false);
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
-        missAudio.play();
+
     }
 
     this.oppBoardHit = function(){
         var pos = oppBoardToWorld(target);
-        var newPiece = hitPiece.clone();
-        newPiece.position.set(pos.x, pos.y, pos.z);
-        newPiece.rotation.x = 90 * Math.PI / 180;
+        //newPiece = hitPiece.clone();
+        var newPiece = hitOpp.clone();
+        newPiece.position.set(pos.x, pos.y, -7.4);
+        //newPiece.rotation.x = 90 * Math.PI / 180;
         scene.add(newPiece);
         oppBoard[target[0]][target[1]] = 1;
         myTurn = false;
@@ -335,9 +364,10 @@ BATTLESHIP.BoardController = function (options) {
 
     this.oppBoardMiss = function(){
         var pos = oppBoardToWorld(target);
-        var newPiece = missPiece.clone();
-        newPiece.position.set(pos.x, pos.y, pos.z);
-        newPiece.rotation.x = 90 * Math.PI / 180;
+        //newPiece = missPiece.clone();
+        var newPiece = missOpp.clone();
+        newPiece.position.set(pos.x, pos.y, -7.4);
+        //newPiece.rotation.x = 90 * Math.PI / 180;
         scene.add(newPiece);
         oppBoard[target[0]][target[1]] = 'x';
         myTurn = false;
@@ -398,7 +428,9 @@ BATTLESHIP.BoardController = function (options) {
         containerEl.appendChild(renderer.domElement);
 
         // Set the background color of the scene.
-        renderer.setClearColor(new THREE.Color(0x333F47, 1));
+        //renderer.setClearColor(new THREE.Color(0x333F47, 1));
+
+        // Set window resize with THREE extension
         var winResize   = new THREEx.WindowResize(renderer, camera)
     }
     
@@ -497,7 +529,77 @@ BATTLESHIP.BoardController = function (options) {
         materials.missMaterial = new THREE.MeshPhongMaterial({
             color: 0x0000FF
         });
+ 
+        // water material
+        materials.waterMaterial = new THREE.MeshBasicMaterial({
+            transparent: true,
+            map: THREE.ImageUtils.loadTexture(assetsUrl + 'water.jpg')
+        });   
+
+        materials.explosionMaterial = new THREE.ShaderMaterial({
+            uniforms: { 
+                tExplosion: {
+                    type: "t", 
+                    value: THREE.ImageUtils.loadTexture( 'images/explosion.png' )
+                },
+                time: { // float initialized to 0
+                    type: "f", 
+                    value: 0.0 
+                }
+            },
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: document.getElementById('fragmentShader').textContent
+        });
+
+        materials.noiseTexture = new THREE.ImageUtils.loadTexture('images/cloud.png');
+        materials.noiseTexture.wrapS = materials.noiseTexture.wrapT = THREE.RepeatWrapping;
+
+        materials.lavaTexture = new THREE.ImageUtils.loadTexture('images/lava.jpg');
+        materials.lavaTexture.wrapS = materials.lavaTexture.wrapT = THREE.RepeatWrapping;
+
+        customUniforms = {
+            baseTexture:    { type: "t", value: materials.lavaTexture },
+            baseSpeed:      { type: "f", value: 0.05 },
+            noiseTexture:   { type: "t", value: materials.noiseTexture },
+            noiseScale:     { type: "f", value: 0.5337 },
+            alpha:          { type: "f", value: 1.0 },
+            time:           { type: "f", value: 1.0 }
+        };
+
+        materials.customMaterial = new THREE.ShaderMaterial({
+            uniforms: customUniforms,
+            vertexShader:   document.getElementById( 'vertexShader2'   ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader2' ).textContent
+        });
+
+        materials.customMaterial.side = THREE.DoubleSide;
+
+        materials.waterTexture = new THREE.ImageUtils.loadTexture( assetsUrl + 'water.jpg' );
+        materials.waterTexture.wrapS = materials.waterTexture.wrapT = THREE.RepeatWrapping; 
+        
+        // use "this." to create global object
+        customUniforms2 = {
+            baseTexture:    { type: "t", value: materials.waterTexture },
+            baseSpeed:      { type: "f", value: 1.15 },
+            noiseTexture:   { type: "t", value: materials.noiseTexture },
+            noiseScale:     { type: "f", value: 0.2 },
+            alpha:          { type: "f", value: 0.8 },
+            time:           { type: "f", value: 1.0 }
+        };
+
+        // create custom material from the shader code above
+        //   that is within specially labeled script tags
+        materials.customMaterial2 = new THREE.ShaderMaterial( 
+        {
+            uniforms: customUniforms2,
+            vertexShader:   document.getElementById( 'vertexShader2'   ).textContent,
+            fragmentShader: document.getElementById( 'fragmentShader2' ).textContent
+        }   );
      
+        // other material properties
+        materials.customMaterial2.side = THREE.DoubleSide;
+        materials.customMaterial2.transparent = true;
+      
     }
     
     /**
@@ -584,11 +686,11 @@ BATTLESHIP.BoardController = function (options) {
         }
 
 
-        geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, squareSize - 1, squareSize - 1 );
-        geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, squareSize - 1, squareSize - 1);
-        geometries.cruiserGeom = new THREE.CubeGeometry(squareSize * 3, squareSize - 1, squareSize - 1 );
-        geometries.destroyerGeom = new THREE.CubeGeometry(squareSize * 2, squareSize - 1, squareSize - 1 );
-        geometries.submarineGeom = new THREE.CubeGeometry(squareSize, squareSize - 1, squareSize - 1 );
+        geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, 2, squareSize - 1 );
+        geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, 2, squareSize - 1);
+        geometries.cruiserGeom = new THREE.CubeGeometry(squareSize * 3, 2, squareSize - 1 );
+        geometries.destroyerGeom = new THREE.CubeGeometry(squareSize * 2, 2, squareSize - 1 );
+        geometries.submarineGeom = new THREE.CubeGeometry(squareSize, 2, squareSize - 1 );
         geometries.textGeom = new THREE.CubeGeometry(squareSize * 5, squareSize * 2, 0 );
         geometries.pieceGeom = new THREE.CubeGeometry(squareSize / 3, squareSize *2, squareSize / 3);
         
@@ -603,6 +705,28 @@ BATTLESHIP.BoardController = function (options) {
         myTurnMsg.position.set(-50, 50, 0);
         oppTurnMsg = new THREE.Mesh(geometries.textGeom, materials.othersTurnMaterial);
         oppTurnMsg.position.set(-50, 50, 0);
+
+        geometries.planeGeometry = new THREE.PlaneGeometry(squareSize, squareSize, 20, 20);
+
+        missPlane = new THREE.Mesh(geometries.planeGeometry.clone(), materials.customMaterial2);
+        missPlane.rotation.x = -0.5*Math.PI;
+
+        hitOpp = new THREE.Mesh(geometries.planeGeometry, materials.customMaterial);
+
+        missOpp = new THREE.Mesh(geometries.planeGeometry, materials.customMaterial2)
+
+
+
+        geometries.explosion = new THREE.IcosahedronGeometry(4, 4);
+        hitPlane = new THREE.Mesh(geometries.explosion, materials.explosionMaterial);
+        
+        // missPlane.position.set(5, 2.60, 5);
+        // scene.add(missPlane);
+        // splash = true;
+
+        // setTimeout(function(){
+        //     splash = false;
+        // }, 3000);
 
         callback();
     }
@@ -623,14 +747,35 @@ BATTLESHIP.BoardController = function (options) {
     /**
      * The render loop.
      */
-    function onAnimationFrame() {
+    function onAnimationFrame(ts) {
         requestAnimationFrame(onAnimationFrame);
         
         cameraController.update();
-        
+
+        if(splash){
+            var center = new THREE.Vector2(0, 0);
+            //window.requestAnimationFrame(onAnimationFrame);
+            console.log("newMiss:", missMyBoard);
+            var vLength = missMyBoard.geometry.vertices.length;
+            for (var i = 0; i < vLength; i++) {
+                var v = missMyBoard.geometry.vertices[i];
+                var dist = new THREE.Vector2(v.x, v.y).sub(center);
+                var size = 2.0;
+                var magnitude = 0.5;
+                v.z = Math.sin(dist.length()/-size + (ts/500)) * magnitude;
+            }
+            missMyBoard.geometry.verticesNeedUpdate = true;
+        }
         // update moving light position
         lights.movingLight.position.x = camera.position.x;
         lights.movingLight.position.z = camera.position.z;
+
+        materials.explosionMaterial.uniforms['time'].value = 0.00025 * (Date.now() - start);        
+        var delta = clock.getDelta();
+        customUniforms.time.value += delta;
+        customUniforms2.time.value += delta;
+
+
         
         renderer.render(scene, camera);
     }
@@ -662,12 +807,11 @@ BATTLESHIP.BoardController = function (options) {
         if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting)){
             if(isPieceOnMousePosition(mouse3D)){
                 selectPiece(mouse3D, initSet);
-                renderer.domElement.addEventListener("mousemove", onMouseMove, false);
             } else if(isShipInitOnMousePosition(mouse3D) && setting){
                 initSet = true;
                 selectPiece(mouse3D, initSet);
-                renderer.domElement.addEventListener("mousemove", onMouseMove, false);
             }
+            renderer.domElement.addEventListener("mousemove", onMouseMove, false);
             cameraController.enabled = false;
         }
     }
@@ -759,8 +903,8 @@ BATTLESHIP.BoardController = function (options) {
      */
     function onMouseClick(event){
         var mouse3D = getYMouse3D(event);
-        if(!battle){ // phase 1: construction of board
-            if(isStartOnMousePosition(mouse3D)){
+        if(!battle && !setting){ // phase 1: construction of board
+            if(communication && isStartOnMousePosition(mouse3D)){
                 scene.remove(startButton);
                 battle = true;
                 if(recievedId){

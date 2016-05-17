@@ -92,8 +92,8 @@ if (room !== '') {
 }
 
 // Set getUserMedia constraints
-var constraints = {video: true,
-                 audio: true };
+var constraints = {video: true};
+                 // audio: true };
 
 // Call getUserMedia()
 navigator.getUserMedia(constraints, handleUserMedia, handleUserMediaError);
