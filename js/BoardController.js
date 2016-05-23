@@ -167,6 +167,7 @@ BATTLESHIP.BoardController = function (options) {
     var customUniforms, customUniforms2;
     var missOpp, hitOpp;
 
+    var endGame = false;
 
 
     /**********************************************************************************************/
@@ -192,7 +193,7 @@ BATTLESHIP.BoardController = function (options) {
     this.addPiece = function (piece){
         var loader = new THREE.ColladaLoader();
         var pieceMesh;
-        var pieceLoc
+        var pieceLoc;
         switch(piece.type){
             case 1:
                 pieces.submarine = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
@@ -349,33 +350,32 @@ BATTLESHIP.BoardController = function (options) {
 
     this.oppBoardHit = function(){
         var pos = oppBoardToWorld(target);
-        //newPiece = hitPiece.clone();
         var newPiece = hitOpp.clone();
         newPiece.position.set(pos.x, pos.y, -7.4);
-        //newPiece.rotation.x = 90 * Math.PI / 180;
         scene.add(newPiece);
         oppBoard[target[0]][target[1]] = 1;
         myTurn = false;
         scene.remove(myTurnMsg);
         scene.add(oppTurnMsg);
-        // renderer.domElement.addEventListener("click", onMouseClick, false);
         hitAudio.play();
     }
 
     this.oppBoardMiss = function(){
         var pos = oppBoardToWorld(target);
-        //newPiece = missPiece.clone();
         var newPiece = missOpp.clone();
         newPiece.position.set(pos.x, pos.y, -7.4);
-        //newPiece.rotation.x = 90 * Math.PI / 180;
         scene.add(newPiece);
         oppBoard[target[0]][target[1]] = 'x';
         myTurn = false;
         scene.remove(myTurnMsg);
         scene.add(oppTurnMsg);
-        //renderer.domElement.addEventListener("click", onMouseClick, false);
         missAudio.play();
     }
+
+    this.endGame = function(){
+        endGame = true;
+    }
+ 
     
     /**********************************************************************************************/
     /* Private methods ****************************************************************************/
@@ -804,7 +804,8 @@ BATTLESHIP.BoardController = function (options) {
     function onMouseDown(event){
         var mouse3D = getMouse3D(event);
 
-        if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting)){
+        if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
+            console.log('battle down:', battle)
             if(isPieceOnMousePosition(mouse3D)){
                 selectPiece(mouse3D, initSet);
             } else if(isShipInitOnMousePosition(mouse3D) && setting){
@@ -828,7 +829,8 @@ BATTLESHIP.BoardController = function (options) {
 
         var mouse3D = getMouse3D(event);
 
-        if(isMouseOnBoard(mouse3D) && selectedPiece){
+        if(isMouseOnBoard(mouse3D) && selectedPiece && !battle && !endGame){
+            console.log('battle up:', battle)
             var toBoardPos = worldToBoard(mouse3D); 
             if((toBoardPos[0] === selectedPiece.boardPos[0] && toBoardPos[1] === selectedPiece.boardPos[1])){
                 deselectPiece();
@@ -859,7 +861,8 @@ BATTLESHIP.BoardController = function (options) {
     function onMouseMove(event){    
         var mouse3D = getMouse3D(event);
 
-        if(selectedPiece){
+        if(selectedPiece && !battle && !endGame){
+            console.log('battle move:', battle)
             selectedPiece.obj.position.x= mouse3D.x;
             selectedPiece.obj.position.z = mouse3D.z;
             selectedPiece.obj.position.y = 8;
@@ -876,7 +879,8 @@ BATTLESHIP.BoardController = function (options) {
     function onDoubleClick(event){
         var mouse3D = getMouse3D(event);
 
-        if(isMouseOnBoard(mouse3D)){
+        if(isMouseOnBoard(mouse3D) && !battle && !endGame){
+            console.log('battle double:', battle)
             if(isPieceOnMousePosition(mouse3D)){
                 selectPiece(mouse3D, false);
                 if(selectedPiece){
@@ -903,7 +907,8 @@ BATTLESHIP.BoardController = function (options) {
      */
     function onMouseClick(event){
         var mouse3D = getYMouse3D(event);
-        if(!battle && !setting){ // phase 1: construction of board
+        if(!battle && !setting && !endGame) { // phase 1: construction of board
+            console.log('battle click 1:', battle)
             if(communication && isStartOnMousePosition(mouse3D)){
                 scene.remove(startButton);
                 battle = true;
@@ -923,7 +928,8 @@ BATTLESHIP.BoardController = function (options) {
                 }
             }
         }else{ // phase 2: game
-            if(isMouseOnOppBoard(mouse3D) && myTurn){
+            if(isMouseOnOppBoard(mouse3D) && myTurn && !endGame){
+                console.log('battle click 2:', battle)
                 target = [ Math.floor(mouse3D.x / squareSize) , Math.floor((squareSize * 11 - mouse3D.y) / squareSize)] 
                 if(callbacks.selectTarget){
                     callbacks.selectTarget(target);
@@ -1334,6 +1340,7 @@ BATTLESHIP.BoardController = function (options) {
             renderer.domElement.addEventListener("click", onMouseClick, false);
         }
     }
- 
+
+
 };
 

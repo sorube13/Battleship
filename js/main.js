@@ -69,14 +69,21 @@ var pc_constraints = {
 var sdpConstraints = webrtcDetectedBrowser === 'firefox' ? 
   {'offerToReceiveAudio':true,'offerToReceiveVideo':true } :
   {'mandatory': {'OfferToReceiveAudio':true, 'OfferToReceiveVideo':true }};
-    
+
+/////////////////////////////////////////////
+function randomId() {
+  return Math.floor((1 + Math.random()) * 0x100000000)
+    .toString(16)
+    .substring(1);
+}
 
 /////////////////////////////////////////////
 
 // Let's get started: prompt user for input (room name)
-var room = prompt('Enter room name:');
-if(room === null){
-    room = "foo";
+var default_name = randomId();
+var room = prompt('Enter room name:', default_name);
+if(!room){
+    room = default_name;
 }
 
 document.querySelector('#roomTitle').innerHTML += room;

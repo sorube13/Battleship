@@ -9,7 +9,7 @@ var BATTLESHIP = {
 BATTLESHIP.Game = function(options){
     'use strict';
 
-    var id =  Math.floor(Math.random() * 1000000000 );
+    var id =  randomId();//Math.floor(Math.random() * 1000000000 );
     var oppId;
     var myTurn = false;
 
@@ -419,7 +419,7 @@ BATTLESHIP.Game = function(options){
 
     this.receiveFromOpponent = function(data){
         if(!oppId){
-            oppId = Number(data);
+            oppId = data;
             if(id > oppId){
                 myTurn = true;
             } else{
@@ -524,6 +524,7 @@ BATTLESHIP.Game = function(options){
             numMyShipsHit++;
             if(numMyShipsHit === numShips){
                 console.log("GAME END: YOU LOST");
+                boardController.endGame();
                 alert("GAME END: YOU LOST");
             }
         } else{
@@ -531,6 +532,7 @@ BATTLESHIP.Game = function(options){
             console.log("numOppShipsHit:", numOppShipsHit);
             if(numOppShipsHit === numShips){
                 console.log("GAME END: YOU WON!");
+                boardController.endGame();
                 alert("GAME END: YOU WON!");
             }
         }
