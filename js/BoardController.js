@@ -193,37 +193,60 @@ BATTLESHIP.BoardController = function (options) {
     this.addPiece = function (piece){
         var loader = new THREE.ColladaLoader();
         var pieceMesh;
-        var pieceLoc;
+        var pieceLoc = 'ship.dae';
         switch(piece.type){
             case 1:
-                pieces.submarine = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
-                pieceMesh = pieces.submarine;
+                loader.load(assetsUrl + pieceLoc, function(result){
+                    pieceMesh = result.scene;
+                    pieceMesh.scale.x = 0.2;
+                    setPiece(piece, pieceMesh);                    
+                });
+                // pieces.submarine = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
+                // pieceMesh = pieces.submarine;
                 break;
             case 2:
-                pieces.destroyer = new THREE.Mesh(geometries.destroyerGeom, materials.blackPieceMaterial);
-                pieceMesh = pieces.destroyer;
+                loader.load(assetsUrl + pieceLoc, function(result){
+                    pieceMesh = result.scene;
+                    pieceMesh.scale.x = 0.4;
+                    setPiece(piece, pieceMesh);                    
+                });
+                // pieces.destroyer = new THREE.Mesh(geometries.destroyerGeom, materials.blackPieceMaterial);
+                // pieceMesh = pieces.destroyer;
                 break;
             case 3:
-                pieces.cruiser = new THREE.Mesh(geometries.cruiserGeom, materials.blackPieceMaterial);
-                pieceMesh = pieces.cruiser;
+                loader.load(assetsUrl + pieceLoc, function(result){
+                    pieceMesh = result.scene;
+                    pieceMesh.scale.x = 0.6;
+                    setPiece(piece, pieceMesh);                    
+                });
+                // pieces.cruiser = new THREE.Mesh(geometries.cruiserGeom, materials.blackPieceMaterial);
+                // pieceMesh = pieces.cruiser;
                 break;
             case 4:
-                pieces.battleship = new THREE.Mesh(geometries.battleshipGeom, materials.blackPieceMaterial);
-                pieceMesh = pieces.battleship;
+                loader.load(assetsUrl + pieceLoc, function(result){
+                    pieceMesh = result.scene;
+                    pieceMesh.scale.x = 0.8;
+                    setPiece(piece, pieceMesh);                    
+                });
+                // pieces.battleship = new THREE.Mesh(geometries.battleshipGeom, materials.blackPieceMaterial);
+                // pieceMesh = pieces.battleship;
                 break;
             case 5:
-                pieces.carrier = new THREE.Mesh(geometries.carrierGeom, materials.blackPieceMaterial);
-                pieceMesh = pieces.carrier;
+                loader.load(assetsUrl + pieceLoc, function(result){
+                    pieceMesh = result.scene;
+                    setPiece(piece, pieceMesh);                    
+                });
+                // pieces.carrier = new THREE.Mesh(geometries.carrierGeom, materials.blackPieceMaterial);
+                // pieceMesh = pieces.carrier;
                 break;
             default:
                 break;
         }
-        //console.log('type:', piece.type, 'pieceMesh:', pieceMesh);
+    }
+
+    function setPiece(piece, pieceMesh){
         var pos = initBoardPieceToWorld(piece)
-        pieceMesh.position.set(pos.x, pos.y, pos.z);
-        if(piece.orientation === 0){
-            pieceMesh.rotation.y = 90 * Math.PI / 180; 
-        }
+        pieceMesh.position.set(pos.x, 0, pos.z);
         placePiece(piece, pieceMesh, initBoard);
         scene.add(pieceMesh);
     }
@@ -755,7 +778,6 @@ BATTLESHIP.BoardController = function (options) {
         if(splash){
             var center = new THREE.Vector2(0, 0);
             //window.requestAnimationFrame(onAnimationFrame);
-            console.log("newMiss:", missMyBoard);
             var vLength = missMyBoard.geometry.vertices.length;
             for (var i = 0; i < vLength; i++) {
                 var v = missMyBoard.geometry.vertices[i];
@@ -805,7 +827,6 @@ BATTLESHIP.BoardController = function (options) {
         var mouse3D = getMouse3D(event);
 
         if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
-            console.log('battle down:', battle)
             if(isPieceOnMousePosition(mouse3D)){
                 selectPiece(mouse3D, initSet);
             } else if(isShipInitOnMousePosition(mouse3D) && setting){
@@ -830,7 +851,6 @@ BATTLESHIP.BoardController = function (options) {
         var mouse3D = getMouse3D(event);
 
         if(isMouseOnBoard(mouse3D) && selectedPiece && !battle && !endGame){
-            console.log('battle up:', battle)
             var toBoardPos = worldToBoard(mouse3D); 
             if((toBoardPos[0] === selectedPiece.boardPos[0] && toBoardPos[1] === selectedPiece.boardPos[1])){
                 deselectPiece();
@@ -862,10 +882,9 @@ BATTLESHIP.BoardController = function (options) {
         var mouse3D = getMouse3D(event);
 
         if(selectedPiece && !battle && !endGame){
-            console.log('battle move:', battle)
             selectedPiece.obj.position.x= mouse3D.x;
             selectedPiece.obj.position.z = mouse3D.z;
-            selectedPiece.obj.position.y = 8;
+            selectedPiece.obj.position.y = 3;
         }
     }
 
@@ -880,7 +899,6 @@ BATTLESHIP.BoardController = function (options) {
         var mouse3D = getMouse3D(event);
 
         if(isMouseOnBoard(mouse3D) && !battle && !endGame){
-            console.log('battle double:', battle)
             if(isPieceOnMousePosition(mouse3D)){
                 selectPiece(mouse3D, false);
                 if(selectedPiece){
@@ -908,7 +926,6 @@ BATTLESHIP.BoardController = function (options) {
     function onMouseClick(event){
         var mouse3D = getYMouse3D(event);
         if(!battle && !setting && !endGame) { // phase 1: construction of board
-            console.log('battle click 1:', battle)
             if(communication && isStartOnMousePosition(mouse3D)){
                 scene.remove(startButton);
                 battle = true;
@@ -929,7 +946,6 @@ BATTLESHIP.BoardController = function (options) {
             }
         }else{ // phase 2: game
             if(isMouseOnOppBoard(mouse3D) && myTurn && !endGame){
-                console.log('battle click 2:', battle)
                 target = [ Math.floor(mouse3D.x / squareSize) , Math.floor((squareSize * 11 - mouse3D.y) / squareSize)] 
                 if(callbacks.selectTarget){
                     callbacks.selectTarget(target);
