@@ -424,7 +424,7 @@ BATTLESHIP.BoardController = function (options) {
         
         // create camera
         camera = new THREE.PerspectiveCamera(35, viewWidth / viewHeight, 1, 1000);
-        camera.position.set(squareSize * 5, 200, 300);
+        camera.position.set(squareSize * 5, 275, 375);
         cameraController = new THREE.OrbitControls(camera, containerEl);
         cameraController.target = new THREE.Vector3(squareSize * 5, squareSize * 2, 0);
         //
@@ -449,7 +449,7 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(skyBox);
         
         containerEl.appendChild(renderer.domElement);
-
+    
         // Set the background color of the scene.
         //renderer.setClearColor(new THREE.Color(0x333F47, 1));
 
@@ -709,13 +709,13 @@ BATTLESHIP.BoardController = function (options) {
         }
 
 
-        geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, 2, squareSize - 1 );
-        geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, 2, squareSize - 1);
-        geometries.cruiserGeom = new THREE.CubeGeometry(squareSize * 3, 2, squareSize - 1 );
-        geometries.destroyerGeom = new THREE.CubeGeometry(squareSize * 2, 2, squareSize - 1 );
-        geometries.submarineGeom = new THREE.CubeGeometry(squareSize, 2, squareSize - 1 );
-        geometries.textGeom = new THREE.CubeGeometry(squareSize * 5, squareSize * 2, 0 );
-        geometries.pieceGeom = new THREE.CubeGeometry(squareSize / 3, squareSize *2, squareSize / 3);
+        // geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, 2, squareSize - 1 );
+        // geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, 2, squareSize - 1);
+        // geometries.cruiserGeom = new THREE.CubeGeometry(squareSize * 3, 2, squareSize - 1 );
+        // geometries.destroyerGeom = new THREE.CubeGeometry(squareSize * 2, 2, squareSize - 1 );
+        // geometries.submarineGeom = new THREE.CubeGeometry(squareSize, 2, squareSize - 1 );
+        // geometries.textGeom = new THREE.CubeGeometry(squareSize * 5, squareSize * 2, 0 );
+        // geometries.pieceGeom = new THREE.CubeGeometry(squareSize / 3, squareSize *2, squareSize / 3);
         
         hitPiece = new THREE.Mesh(geometries.pieceGeom, materials.hitMaterial);
         missPiece = new THREE.Mesh(geometries.pieceGeom, materials.missMaterial);
@@ -796,8 +796,6 @@ BATTLESHIP.BoardController = function (options) {
         var delta = clock.getDelta();
         customUniforms.time.value += delta;
         customUniforms2.time.value += delta;
-
-
         
         renderer.render(scene, camera);
     }
