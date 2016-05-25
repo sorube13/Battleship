@@ -25,20 +25,23 @@
 <body>
 <h1 id="roomTitle" class="bg-primary"><b>Welcome to Room: </b></h1>
 
-<div class="container-fluid">
+<div class="container-fluid" id="content">
 <div class="row">
-	<div class="col-xs-3">
-	<table id="videos">
+	<div class="col-xs-2" style="height:100%">
+	<table id="videos" class="table-responsive">
 	  <tr><td>
-	    <video id="remoteVideo" poster="3d_assets/person.png" height="200px" autoplay></video>
+	    <video id="remoteVideo" class="img-responsive" poster="3d_assets/person.png" height="200px" autoplay></video>
 	  </td></tr>
 	  <tr><td>
-	    <video id="localVideo" poster="3d_assets/person.png" height="200px" muted autoplay></video>
+	    <video id="localVideo" class="img-responsive" poster="3d_assets/person.png" height="200px" muted autoplay></video>
 	  </td></tr> 
 	</table>
 	</div>
 
-	<div class="col-xs-8" id="boardContainer">
+	<div class="col-xs-8 col-xs-offset-1" id="boardContainer">
+	<!-- <div id="boardContainer"> -->
+
+
 	</div>
 </div>
 </div>

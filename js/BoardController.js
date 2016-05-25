@@ -408,8 +408,8 @@ BATTLESHIP.BoardController = function (options) {
      */
     function initEngine() {
         var skyBox;
-        var viewWidth = containerEl.offsetWidth;
-        var viewHeight = containerEl.offsetHeight;
+        var viewWidth = containerEl.innerWidth;
+        var viewHeight = containerEl.innerHeight;
         
         // instantiate the WebGL Renderer
         renderer = new THREE.WebGLRenderer({
@@ -424,7 +424,7 @@ BATTLESHIP.BoardController = function (options) {
         
         // create camera
         camera = new THREE.PerspectiveCamera(35, viewWidth / viewHeight, 1, 1000);
-        camera.position.set(squareSize * 5, 275, 375);
+        camera.position.set(squareSize * 5, 200, 300);
         cameraController = new THREE.OrbitControls(camera, containerEl);
         cameraController.target = new THREE.Vector3(squareSize * 5, squareSize * 2, 0);
         //
@@ -449,12 +449,21 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(skyBox);
         
         containerEl.appendChild(renderer.domElement);
-    
+
         // Set the background color of the scene.
         //renderer.setClearColor(new THREE.Color(0x333F47, 1));
 
         // Set window resize with THREE extension
-        var winResize   = new THREEx.WindowResize(renderer, camera)
+        var winResize   = new THREEx.WindowResize(renderer, camera, getDimensions);//, getDimensions);
+        // window.addEventListener('resize', function(){
+        //     renderer.setSize(containerEl.clientWidth, containerEl.clientHeight);
+        //     camera.aspect = containerEl.clientWidth / containerEl.clientHeight;
+        //     camera.updateProjectionMatrix();
+        // }, false);
+    }
+
+    function getDimensions(){
+        return { width: containerEl.clientWidth, height: document.getElementById('content').clientHeight  };
     }
     
     /**
@@ -709,13 +718,13 @@ BATTLESHIP.BoardController = function (options) {
         }
 
 
-        // geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, 2, squareSize - 1 );
-        // geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, 2, squareSize - 1);
-        // geometries.cruiserGeom = new THREE.CubeGeometry(squareSize * 3, 2, squareSize - 1 );
-        // geometries.destroyerGeom = new THREE.CubeGeometry(squareSize * 2, 2, squareSize - 1 );
-        // geometries.submarineGeom = new THREE.CubeGeometry(squareSize, 2, squareSize - 1 );
-        // geometries.textGeom = new THREE.CubeGeometry(squareSize * 5, squareSize * 2, 0 );
-        // geometries.pieceGeom = new THREE.CubeGeometry(squareSize / 3, squareSize *2, squareSize / 3);
+        geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, 2, squareSize - 1 );
+        geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, 2, squareSize - 1);
+        geometries.cruiserGeom = new THREE.CubeGeometry(squareSize * 3, 2, squareSize - 1 );
+        geometries.destroyerGeom = new THREE.CubeGeometry(squareSize * 2, 2, squareSize - 1 );
+        geometries.submarineGeom = new THREE.CubeGeometry(squareSize, 2, squareSize - 1 );
+        geometries.textGeom = new THREE.CubeGeometry(squareSize * 5, squareSize * 2, 0 );
+        geometries.pieceGeom = new THREE.CubeGeometry(squareSize / 3, squareSize *2, squareSize / 3);
         
         hitPiece = new THREE.Mesh(geometries.pieceGeom, materials.hitMaterial);
         missPiece = new THREE.Mesh(geometries.pieceGeom, materials.missMaterial);
@@ -796,6 +805,8 @@ BATTLESHIP.BoardController = function (options) {
         var delta = clock.getDelta();
         customUniforms.time.value += delta;
         customUniforms2.time.value += delta;
+
+
         
         renderer.render(scene, camera);
     }
@@ -1096,7 +1107,7 @@ BATTLESHIP.BoardController = function (options) {
 
         if(mouseEvent.offsetX !== undefined){
             x = mouseEvent.offsetX;
-            y = mouseEvent.offsetY;
+            y = mouseEvent.offsetX;
         } else{
             x = mouseEvent.layerX;
             y = mouseEvent.layerY;
@@ -1241,7 +1252,7 @@ BATTLESHIP.BoardController = function (options) {
             var boardPos = worldToBoard(pos);
             var myBoard = board;
         }
-        if(myBoard[boardPos[0]][boardPos[1]] === 0){
+        if(myBoard[boardPos[0]][boardPos[1]] === 0 || myBoard[boardPos[0]][boardPos[1]] === 'x' || myBoard[boardPos[0]][boardPos[1]] === 1){
             selectedPiece = null;
             return false;
         }
