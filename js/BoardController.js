@@ -1357,6 +1357,4 @@ BATTLESHIP.BoardController = function (options) {
         }
     }
 
-
 };
-

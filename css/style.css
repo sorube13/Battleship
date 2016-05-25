@@ -25,12 +25,11 @@ tbody{
     height: 100%;
     width: 75%;
     background: #e6e0cf;
+    padding-right: 80%;
     float: right;
 }
 
 #videos {
-   /* table-layout: fixed;
-    border-collapse: collapse;*/
     padding-left: 1%;
     display:inline-block;
     height: 100%;
@@ -38,33 +37,5 @@ tbody{
     float: left;
 }
 
-#localVideo{
-
-	
-}
 
 
-
-
-#remoteVideo{
-
-}
-
-@media screen and (max-width: 600px) {
-  #videos {
-    visibility: hidden;
-    clear: both;
-    float: left;
-    width: 1%;
-    display: none;
-  }
-
-  #boardController{
-    visibility: hidden;
-    display: none;
-    height: 100%;
-    width: 99%;
-    background: #e6e0cf;
-
-  }
-}
