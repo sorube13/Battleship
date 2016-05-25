@@ -408,8 +408,8 @@ BATTLESHIP.BoardController = function (options) {
      */
     function initEngine() {
         var skyBox;
-        var viewWidth = containerEl.offsetWidth;
-        var viewHeight = containerEl.offsetHeight;
+        var viewWidth = containerEl.innerWidth;
+        var viewHeight = containerEl.innerHeight;
         
         // instantiate the WebGL Renderer
         renderer = new THREE.WebGLRenderer({
@@ -454,7 +454,16 @@ BATTLESHIP.BoardController = function (options) {
         //renderer.setClearColor(new THREE.Color(0x333F47, 1));
 
         // Set window resize with THREE extension
-        var winResize   = new THREEx.WindowResize(renderer, camera)
+        var winResize   = new THREEx.WindowResize(renderer, camera, getDimensions);//, getDimensions);
+        // window.addEventListener('resize', function(){
+        //     renderer.setSize(containerEl.clientWidth, containerEl.clientHeight);
+        //     camera.aspect = containerEl.clientWidth / containerEl.clientHeight;
+        //     camera.updateProjectionMatrix();
+        // }, false);
+    }
+
+    function getDimensions(){
+        return { width: containerEl.clientWidth, height: document.getElementById('content').clientHeight  };
     }
     
     /**
@@ -1098,7 +1107,7 @@ BATTLESHIP.BoardController = function (options) {
 
         if(mouseEvent.offsetX !== undefined){
             x = mouseEvent.offsetX;
-            y = mouseEvent.offsetY;
+            y = mouseEvent.offsetX;
         } else{
             x = mouseEvent.layerX;
             y = mouseEvent.layerY;
@@ -1243,7 +1252,7 @@ BATTLESHIP.BoardController = function (options) {
             var boardPos = worldToBoard(pos);
             var myBoard = board;
         }
-        if(myBoard[boardPos[0]][boardPos[1]] === 0){
+        if(myBoard[boardPos[0]][boardPos[1]] === 0 || myBoard[boardPos[0]][boardPos[1]] === 'x' || myBoard[boardPos[0]][boardPos[1]] === 1){
             selectedPiece = null;
             return false;
         }
