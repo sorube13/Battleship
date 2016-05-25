@@ -408,8 +408,8 @@ BATTLESHIP.BoardController = function (options) {
      */
     function initEngine() {
         var skyBox;
-        var viewWidth = containerEl.innerWidth;
-        var viewHeight = containerEl.innerHeight;
+        var viewWidth = containerEl.offsetWidth;
+        var viewHeight = containerEl.offsetHeight;
         
         // instantiate the WebGL Renderer
         renderer = new THREE.WebGLRenderer({
@@ -454,16 +454,14 @@ BATTLESHIP.BoardController = function (options) {
         //renderer.setClearColor(new THREE.Color(0x333F47, 1));
 
         // Set window resize with THREE extension
-        var winResize   = new THREEx.WindowResize(renderer, camera, getDimensions);//, getDimensions);
+        var winResize   = new THREEx.WindowResize(renderer, camera, function(){
+            return {width:containerEl.clientWidth, height: document.getElementById('content').clientHeight}
+        });
         // window.addEventListener('resize', function(){
-        //     renderer.setSize(containerEl.clientWidth, containerEl.clientHeight);
-        //     camera.aspect = containerEl.clientWidth / containerEl.clientHeight;
+        //     renderer.setSize(containerEl.offsetWidth, containerEl.offsetHeight);
+        //     camera.aspect = containerEl.offsetWidth / containerEl.offsetHeight;
         //     camera.updateProjectionMatrix();
         // }, false);
-    }
-
-    function getDimensions(){
-        return { width: containerEl.clientWidth, height: document.getElementById('content').clientHeight  };
     }
     
     /**
@@ -1107,7 +1105,7 @@ BATTLESHIP.BoardController = function (options) {
 
         if(mouseEvent.offsetX !== undefined){
             x = mouseEvent.offsetX;
-            y = mouseEvent.offsetX;
+            y = mouseEvent.offsetY;
         } else{
             x = mouseEvent.layerX;
             y = mouseEvent.layerY;
@@ -1366,4 +1364,6 @@ BATTLESHIP.BoardController = function (options) {
         }
     }
 
+
 };
+
