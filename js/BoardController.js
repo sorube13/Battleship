@@ -329,7 +329,7 @@ BATTLESHIP.BoardController = function (options) {
         awaitGame();
     }
     
-    this.myBoardHit = function(target){
+    this.myBoardHit = function(target, totalSink){
         var pos = boardToWorld(target);
         //var newPiece = hitPiece.clone();
         var newPiece = hitPlane.clone();
@@ -339,6 +339,15 @@ BATTLESHIP.BoardController = function (options) {
         setTimeout(function(){
             hit = false;
         }, 3000);
+        var ship = board[target[0]][target[1]];
+        if(totalSink){
+            if(ship.piece.orientation === 1){
+                ship.pieceMesh.rotation.z -= 30*Math.PI /180;
+            }else{
+                ship.pieceMesh.rotation.x -= 30*Math.PI/180;
+            }
+                
+        }
         board[target[0]][target[1]] = 1;
         myTurn = true;
         scene.remove(oppTurnMsg);
@@ -450,18 +459,10 @@ BATTLESHIP.BoardController = function (options) {
         
         containerEl.appendChild(renderer.domElement);
 
-        // Set the background color of the scene.
-        //renderer.setClearColor(new THREE.Color(0x333F47, 1));
-
         // Set window resize with THREE extension
         var winResize   = new THREEx.WindowResize(renderer, camera, function(){
             return {width:containerEl.clientWidth, height: document.getElementById('content').clientHeight}
         });
-        // window.addEventListener('resize', function(){
-        //     renderer.setSize(containerEl.offsetWidth, containerEl.offsetHeight);
-        //     camera.aspect = containerEl.offsetWidth / containerEl.offsetHeight;
-        //     camera.updateProjectionMatrix();
-        // }, false);
     }
     
     /**

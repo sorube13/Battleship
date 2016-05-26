@@ -449,9 +449,9 @@ BATTLESHIP.Game = function(options){
         if((myBoard[target[0]][target[1]] !== 1) && (myBoard[target[0]][target[1]] !== 'x')){
             if(myBoard[target[0]][target[1]] !== 0){
                 sendData(true + " " +myBoard[target[0]][target[1]].id);
-                addHit(myBoard[target[0]][target[1]].id, myShipsHit);
+                var totalSink = addHit(myBoard[target[0]][target[1]].id, myShipsHit);
                 myBoard[target[0]][target[1]] = 1;
-                boardController.myBoardHit(target);
+                boardController.myBoardHit(target, totalSink);
             } else{
                 sendData(false);
                 myBoard[target[0]][target[1]] = "x";
@@ -469,6 +469,7 @@ BATTLESHIP.Game = function(options){
                 if(myList.carrier === BATTLESHIP.CARRIER){
                     console.log("carrier sunk");
                     addNumHits(myList);
+                    return true;
                 }
                 break;
             case 2:
@@ -476,6 +477,7 @@ BATTLESHIP.Game = function(options){
                 if(myList.battleship === BATTLESHIP.BATTLESHIP){
                     console.log("battleship sunk");
                     addNumHits(myList);
+                    return true;
                 }
                 break;
             case 3:
@@ -483,6 +485,7 @@ BATTLESHIP.Game = function(options){
                 if(myList.cruiser === BATTLESHIP.CRUISER){
                     console.log("cruiser sunk");
                     addNumHits(myList);
+                    return true;
                 }
                 break;
             case 4:
@@ -490,6 +493,7 @@ BATTLESHIP.Game = function(options){
                 if(myList.destroyer1 === BATTLESHIP.DESTROYER){
                     console.log("destroyer 1 sunk");
                     addNumHits(myList);
+                    return true;
                 }
                 break;
             case 5:
@@ -497,6 +501,7 @@ BATTLESHIP.Game = function(options){
                 if(myList.destroyer2 === BATTLESHIP.DESTROYER){
                     console.log("destroyer 2 sunk");
                     addNumHits(myList);
+                    return true;
                 }
                 break;
             case 6:
@@ -504,6 +509,7 @@ BATTLESHIP.Game = function(options){
                 if(myList.submarine1 === BATTLESHIP.SUBMARINE){
                     console.log("submarine 1 sunk");
                     addNumHits(myList);
+                    return true;
                 }
                 break;
             case 7:
@@ -511,11 +517,13 @@ BATTLESHIP.Game = function(options){
                 if(myList.submarine2 === BATTLESHIP.SUBMARINE){
                     console.log("submarine 2 sunk");
                     addNumHits(myList);
+                    return true;
                 }
                 break;
             default:
                 break;
         }
+        return false;
 
     }
 
