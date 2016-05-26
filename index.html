@@ -11,18 +11,7 @@
 
 <link href="css/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- <link href="css/style.css" rel="stylesheet"> -->
-<style type="text/css">
-	.row-no-padding {
-	  margin-left: 0;
-	  margin-right: 0;
-	  [class*="col-"] {
-	    padding-left: 0 !important;
-	    padding-right: 0 !important;
-	  }
-	}
-</style>
-
+<link href="css/style.css" rel="stylesheet">
 
 <script src='/socket.io/socket.io.js'></script>
 <script src='js/lib/adapter.js'></script>
@@ -35,14 +24,14 @@
 <body>
 <h1 id="roomTitle" class="bg-primary"><b>Welcome to Room: </b></h1>
 
-<div class="container-fluid" id="content">
-<div class="row ">
-	<div class="col-xs-2" style="height:100%, width:14%">
-	<table id="videos" class="table-responsive">
-	  <tr><td>
+<div class="container-fluid" id="content" >
+<div class="row row-no-padding" >
+	<div class="col-xs-2" >
+	<table id="videos" class="table-responsive" cellpadding="0" cellspacing="0" style="height:100%">
+	  <tr><td  style="text-align: center;">
 	    <video id="remoteVideo" class="img-responsive" poster="3d_assets/person.png" autoplay></video>
 	  </td></tr>
-	  <tr><td>
+	  <tr><td  style="text-align: center;">
 	    <video id="localVideo" class="img-responsive" poster="3d_assets/person.png"  muted autoplay></video>
 	  </td></tr> 
 	</table>

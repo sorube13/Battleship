@@ -2,14 +2,23 @@ html, body {
     height: 100%;
 }
  
-body {
+/*body {
     margin: 0;
     overflow: hidden;
     background-color: #E6E6FA
+}*/
+
+.row-no-padding {
+    margin-left: 0;
+    margin-right: 0;
+    [class*="col-"] {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
 }
 
 
-td{
+/*td{
     display:inline-block;
     height:50%;
     width:100%
@@ -35,7 +44,7 @@ tbody{
     height: 100%;
     width: 16%;
     float: left;
-}
+}*/
 
 
 
