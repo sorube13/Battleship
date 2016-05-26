@@ -2,11 +2,11 @@ html, body {
     height: 100%;
 }
  
-/*body {
+body {
     margin: 0;
     overflow: hidden;
     background-color: #E6E6FA
-}*/
+}
 
 .row-no-padding {
     margin-left: 0;
