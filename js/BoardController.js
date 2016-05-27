@@ -169,6 +169,8 @@ BATTLESHIP.BoardController = function (options) {
 
     var endGame = false;
 
+    var offsets = {};
+
 
     /**********************************************************************************************/
     /* Public methods *****************************************************************************/
@@ -459,8 +461,11 @@ BATTLESHIP.BoardController = function (options) {
         
         containerEl.appendChild(renderer.domElement);
 
+        offsets = getOffset(containerEl);
+
         // Set window resize with THREE extension
         var winResize   = new THREEx.WindowResize(renderer, camera, function(){
+            offsets = getOffset(containerEl);
             return {width:containerEl.clientWidth, height: document.getElementById('content').clientHeight}
         });
     }
@@ -769,7 +774,9 @@ BATTLESHIP.BoardController = function (options) {
         var domElement = renderer.domElement;
 
         domElement.addEventListener('mousedown', onMouseDown, false);
+        domElement.addEventListener('touchstart', onTouchStart, false);
         domElement.addEventListener('mouseup', onMouseUp, false);
+        domElement.addEventListener('touchend', onTouchEnd, false);
         domElement.addEventListener('dblclick', onDoubleClick, false);
         renderer.domElement.addEventListener("click", onMouseClick, false);
     }
@@ -825,6 +832,20 @@ BATTLESHIP.BoardController = function (options) {
         return material;
     }
 
+    function getOffset(obj) {
+        var offsetLeft = 0;
+        var offsetTop = 0;
+        do {
+        if (!isNaN(obj.offsetLeft)) {
+          offsetLeft += obj.offsetLeft;
+        }
+        if (!isNaN(obj.offsetTop)) {
+          offsetTop += obj.offsetTop;
+        }   
+        } while(obj = obj.offsetParent );
+        return {left: offsetLeft, top: offsetTop};
+    }  
+
     /**
      * Listener for mouse down event.
      * Selects a piece from mouse position
@@ -845,6 +866,95 @@ BATTLESHIP.BoardController = function (options) {
             cameraController.enabled = false;
         }
     }
+
+    function onTouchStart(event){
+        var mouse3D = getTouch3D(event);
+
+        if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
+            if(isPieceOnMousePosition(mouse3D)){
+                selectPiece(mouse3D, initSet);
+            } else if(isShipInitOnMousePosition(mouse3D) && setting){
+                initSet = true;
+                selectPiece(mouse3D, initSet);
+            }
+            renderer.domElement.addEventListener("touchmove", onTouchMove, false);
+            cameraController.enabled = false;
+        }
+    }
+
+     
+
+    function onTouchEnd(event){
+        //console.log('touch:', event.targetTouches);
+
+        renderer.domElement.removeEventListener('touchmove', onTouchMove, false);
+
+        var mouse3D = getTouch3D(event);
+
+        if(isMouseOnBoard(mouse3D) && selectedPiece && !battle && !endGame){
+            var toBoardPos = worldToBoard(mouse3D); 
+            if((toBoardPos[0] === selectedPiece.boardPos[0] && toBoardPos[1] === selectedPiece.boardPos[1])){
+                deselectPiece();
+            } else{
+                if(callbacks.pieceCanDrop && callbacks.pieceCanDrop(toBoardPos, selectedPiece.pieceObj)){
+                    instance.movePiece(selectedPiece.boardPos, toBoardPos, initSet);
+                    if(callbacks.pieceDropped){
+                        callbacks.pieceDropped(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, toBoardPos, initSet);
+                        checkLoad(initSet);
+                    }
+                    selectedPiece = null;
+                }else{
+                    deselectPiece();
+                }
+            }
+        }else{
+            deselectPiece();
+        }
+        cameraController.enabled = true;
+        initSet = false;
+;
+    }
+
+    function onTouchMove(event){
+        var mouse3D = getTouch3D(event);
+
+        if(selectedPiece && !battle && !endGame){
+            selectedPiece.obj.position.x= mouse3D.x;
+            selectedPiece.obj.position.z = mouse3D.z;
+            selectedPiece.obj.position.y = 3;
+        }
+    }
+
+    function getTouch3D(event){
+        var x, y;
+
+        event.preventDefault();
+        x = event.targetTouches[0].pageX - offsets.left;
+        y = event.targetTouches[0].pageY - offsets.top;
+
+
+
+        var pos = new THREE.Vector3(0, 0, 1);
+        var pMouse = new THREE.Vector3(
+            (x / renderer.domElement.clientWidth) * 2 - 1,
+            -(y / renderer.domElement.clientHeight) * 2 + 1,
+            1
+        );
+
+
+        //projector.unprojectVector(pMouse, camera);
+        pMouse.unproject(camera);
+
+        var cam = camera.position;
+        var m = pMouse.y / (pMouse.y - cam.y);
+
+        pos.x = pMouse.x + (cam.x - pMouse.x) * m;
+        //pos.y = pMouse.y + (cam.y - pMouse.y) * m;
+        pos.z = pMouse.z + (cam.z - pMouse.z) * m;
+
+        return pos;
+    }
+
 
     /**
      * Listener for mouse up event.
