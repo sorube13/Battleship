@@ -912,6 +912,7 @@ BATTLESHIP.BoardController = function (options) {
         }
         cameraController.enabled = true;
         initSet = false;
+        if(isMouseOnOppBoard(mouse3D) && myTurn)
 ;
     }
 
