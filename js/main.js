@@ -305,7 +305,6 @@ function handleSendChannelStateChange() {
         dataChannelSend.focus();
         dataChannelSend.placeholder = "";
     } else {
-        alert('Datachannel not open');
         dataChannelSend.disabled = true;
     }
 }
