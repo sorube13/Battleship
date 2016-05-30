@@ -54,10 +54,15 @@ function createCORSRequest(method, url) {
 
 
 // Peer Connection contraints: (i) use DTLS;
-var pc_constraints = {
+var pc_constraints = webrtcDetectedBrowser === 'firefox' ? 
+ {
     'optional': [
-      // {'DtlsSrtpKeyAgreement': true},
-      // {'RtpDataChannels': true}
+      {'DtlsSrtpKeyAgreement': true},
+      {'RtpDataChannels': true}
+]} :
+{
+    'optional' : [
+
 ]};
 
 // Session Description Protocol constraints:
@@ -236,8 +241,8 @@ function createPeerConnection() {
         pc = new RTCPeerConnection(pc_config, pc_constraints);
         pc.onicecandidate = handleIceCandidate;
         console.log('Created RTCPeerConnnection with:\n' +
-            '  config: \'' + JSON.stringify(pc_config) + '\';\n');// +
-            // '  constraints: \'' + JSON.stringify(pc_constraints) + '\'.');
+            '  config: \'' + JSON.stringify(pc_config) + '\';\n' +
+            '  constraints: \'' + JSON.stringify(pc_constraints) + '\'.');
     } catch (e) {
         console.log('Failed to create PeerConnection, exception: ' + e.message);
         alert('Cannot create RTCPeerConnection object.');
@@ -300,6 +305,7 @@ function handleSendChannelStateChange() {
         dataChannelSend.focus();
         dataChannelSend.placeholder = "";
     } else {
+        alert('Datachannel not open');
         dataChannelSend.disabled = true;
     }
 }
