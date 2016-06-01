@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="keywords" content="WebRTC, HTML5, JavaScript" />
+<meta name="description" content="WebRTC Reference App" />
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+<meta charset="UTF-8"> 
+
+<link href="/stylesheets/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/stylesheets/style.css" rel="stylesheet">
+
+<title>Battleship</title>
+</head>
+
+<body onload="randomGen();">
+<script type="text/javascript">
+    function goToPage() {
+        var page = document.getElementById('page').value;
+        window.location = window.location +"r/" + page;
+    }
+
+    function randomGen(){
+    	var val = Math.floor((1 + Math.random()) * 0x100000000)
+		    .toString(16)
+		    .substring(1);
+		document.getElementById('page').value = val;
+    }
+</script>
+
+<h2 class="bg-primary" ><b>Battleship</h2>
+<div class="container-fluid">
+	 <div class="row">
+	 	<div class="col-xs-4 col-xs-offset-4">
+	 	<p> Please enter room name: </p>
+	 		<input type="text" id="page" />
+		<p></p>
+		<input type="submit" value="Ok" onclick="goToPage();" />
+		<input type="submit" value="Random" onclick="randomGen();" />
+	 	</div>
+	 </div>
+</div>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+#!/usr/bin/env node
+
+
+var ident= "sorube";
+var secret= "3ba84e92-dc9f-11e5-be0d-27778885886f";
+var domain= "www.silvia-battleship.com";
+var application= "default";
+var room= 'default';
+var secure = 1;
+
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('quiz:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+var io = require('socket.io')(server);
+
+io.sockets.on('connection', function (socket){
+
+  // convenience function to log server messages on the client
+    function log(){
+        var array = [">>> Message from server: "];
+      for (var i = 0; i < arguments.length; i++) {
+        array.push(arguments[i]);
+      }
+        socket.emit('log', array);
+    }
+    console.log('user connection');
+    socket.on('disconnect', function(){
+      console.log('user disconnection');
+    });
+    socket.on('message', function (message) {
+        log('Got message:', message);
+    // for a real app, would be room only (not broadcast)
+        // socket.broadcast.to(message.channel).emit('message', message);
+        socket.broadcast.emit('message', message);
+    });
+
+    socket.on('create or join', function (room) {
+        var numClients = Object.keys(io.sockets.connected).length;
+
+        log('Room ' + room + ' has ' + numClients + ' client(s)');
+        log('Request to create or join room ' + room);
+
+        if (numClients === 1){
+            socket.join(room);
+            socket.emit('created', room);
+        } else if (numClients === 2) {
+            io.sockets.in(room).emit('join', room);
+            socket.join(room);
+            socket.emit('joined', room);
+        } else { // max two clients
+            socket.emit('full', room);
+        }
+        socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
+        socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
+    });
+
+    socket.on('getCred', function(){
+      var cred = 'ident='+ident+'&secret='+secret+'&domain='+domain+'&application='+application+'&room='+room+'&secure='+secure;
+      socket.emit('ICE Candidates', cred);
+    });
+
+});
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
