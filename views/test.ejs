@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="keywords" content="WebRTC, HTML5, JavaScript" />
+<meta name="description" content="WebRTC Reference App" />
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<script src='/socket.io/socket.io.js'></script>
+
+
+<meta charset="UTF-8"> 
+<title>Battleship</title>
+
+</head>
+
+<body>
+<script type="text/javascript">
+	var socket = io.connect();
+
+	// socket.on('hi', function(msg){
+	// 	console.log('Se ha conectado' + msg);
+	// });
+
+	var socket2 = io('/nsp2');
+	socket2.on('hi2', function(msg){
+		console.log('Se ca conectado 2' + msg);
+	});
+</script>
+
+
+</body>
+</html>

@@ -189,7 +189,7 @@ BATTLESHIP.BoardController = function (options) {
             callback();
         });
 
-        initListeners();
+        //initListeners();
     };
 
     this.addPiece = function (piece){
@@ -796,7 +796,7 @@ BATTLESHIP.BoardController = function (options) {
     /**
      * Initialize the listeners.
      */
-    function initListeners(){
+    /*function initListeners(){
         var domElement = renderer.domElement;
 
         domElement.addEventListener('mousedown', onMouseDown, false);
@@ -805,7 +805,7 @@ BATTLESHIP.BoardController = function (options) {
         domElement.addEventListener('touchend', onTouchEnd, false);
         domElement.addEventListener('dblclick', onDoubleClick, false);
         renderer.domElement.addEventListener("click", onMouseClick, false);
-    }
+    }*/
   
     /**
      * The render loop.
@@ -883,12 +883,6 @@ BATTLESHIP.BoardController = function (options) {
         if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
             handleDown(mouse3D);
             renderer.domElement.addEventListener("mousemove", onMouseMove, false);
-        } 
-        if(battle && !endGame){
-            var mouse3D = getYMouse3D(event, renderer, camera);
-            if(isMouseOnOppBoard(mouse3D)){
-                cameraController.enabled = false;
-            }
         }
     }
 
@@ -898,12 +892,6 @@ BATTLESHIP.BoardController = function (options) {
         if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
             handleDown(mouse3D);
             renderer.domElement.addEventListener("touchmove", onTouchMove, false);
-        }
-        if(battle && !endGame){
-            var mouse3D = getYMouse3D(event, renderer, camera);
-            if(isMouseOnOppBoard(mouse3D)){
-                cameraController.enabled = false;
-            }
         }
         // http://jsfiddle.net/mfirdaus/rU8se/?utm_source=website&utm_medium=embed&utm_campaign=rU8se
     }

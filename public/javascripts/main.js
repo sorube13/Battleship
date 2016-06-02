@@ -76,13 +76,6 @@ var sdpConstraints = webrtcDetectedBrowser === 'firefox' ?
   {'mandatory': {'OfferToReceiveAudio':true, 'OfferToReceiveVideo':true }};
 
 /////////////////////////////////////////////
-function randomId() {
-  return Math.floor((1 + Math.random()) * 0x100000000)
-    .toString(16)
-    .substring(1);
-}
-
-/////////////////////////////////////////////
 
 // Let's get started: prompt user for input (room name)
 // var default_name = randomId();

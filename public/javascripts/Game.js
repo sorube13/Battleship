@@ -9,6 +9,12 @@ var BATTLESHIP = {
 BATTLESHIP.Game = function(options){
     'use strict';
 
+    function randomId() {
+      return Math.floor((1 + Math.random()) * 0x100000000)
+        .toString(16)
+        .substring(1);
+    }
+
     var id =  randomId();//Math.floor(Math.random() * 1000000000 );
     var oppId;
     var myTurn = false;

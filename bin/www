@@ -31,6 +31,9 @@ app.set('port', port);
 var server = http.createServer(app);
 var io = require('socket.io')(server);
 
+var nsp = io.of('/nsp');
+var nsp2 = io.of('/nsp2');
+
 io.sockets.on('connection', function (socket){
 
   // convenience function to log server messages on the client
@@ -78,6 +81,19 @@ io.sockets.on('connection', function (socket){
     });
 
 });
+
+nsp.on('connection', function(socket){
+  console.log('Someone Entered namespace');
+  nsp.emit('hi', 'Socket 1');
+});
+
+nsp2.on('connection', function(socket){
+  console.log('Someone Entered namespace 2');
+  nsp2.emit('hi2', 'Socket 2');
+});
+
+
+
 /**
  * Listen on provided port, on all network interfaces.
  */
