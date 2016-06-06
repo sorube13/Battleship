@@ -188,8 +188,6 @@ BATTLESHIP.BoardController = function (options) {
             
             callback();
         });
-
-        //initListeners();
     };
 
     this.addPiece = function (piece){
@@ -792,20 +790,6 @@ BATTLESHIP.BoardController = function (options) {
 
         callback();
     }
-
-    /**
-     * Initialize the listeners.
-     */
-    /*function initListeners(){
-        var domElement = renderer.domElement;
-
-        domElement.addEventListener('mousedown', onMouseDown, false);
-        domElement.addEventListener('touchstart', onTouchStart, false);
-        domElement.addEventListener('mouseup', onMouseUp, false);
-        domElement.addEventListener('touchend', onTouchEnd, false);
-        domElement.addEventListener('dblclick', onDoubleClick, false);
-        renderer.domElement.addEventListener("click", onMouseClick, false);
-    }*/
   
     /**
      * The render loop.
@@ -872,176 +856,6 @@ BATTLESHIP.BoardController = function (options) {
     }  
 
     /**
-     * Listener for mouse down event.
-     * Selects a piece from mouse position
-     * Adds mouse move listener
-     * Blocks camera rotation
-     */
-    function onMouseDown(event){
-        var mouse3D = getMouse3D(event, renderer, camera);
-
-        if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
-            handleDown(mouse3D);
-            renderer.domElement.addEventListener("mousemove", onMouseMove, false);
-        }
-    }
-
-    function onTouchStart(event){
-        var mouse3D = getTouch3D(event, renderer, camera);
-
-        if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
-            handleDown(mouse3D);
-            renderer.domElement.addEventListener("touchmove", onTouchMove, false);
-        }
-        // http://jsfiddle.net/mfirdaus/rU8se/?utm_source=website&utm_medium=embed&utm_campaign=rU8se
-    }
-
-
-    function handleDown(mouse3D){
-        if(isPieceOnMousePosition(mouse3D)){
-                selectPiece(mouse3D, initSet);
-        } else if(isShipInitOnMousePosition(mouse3D) && setting){
-            initSet = true;
-            selectPiece(mouse3D, initSet);
-        }
-        cameraController.enabled = false;
-    }
-
-    /**
-     * Listener for mouse up event.
-     * Selects piece from mouse position
-     * Call callbacks to check if piece can be dropped and dropping it
-     * Moves the piece to the new position
-     * Activates the camera rotation
-     */
-    function onMouseUp(event){
-        renderer.domElement.removeEventListener('mousemove', onMouseMove, false);
-        var mouse3D = getMouse3D(event, renderer, camera);
-        handleUp(mouse3D);
-    }
-
-    function onTouchEnd(event){
-        renderer.domElement.removeEventListener('touchmove', onTouchMove, false);
-        var mouse3D = getTouch3D(event, renderer, camera);
-        handleUp(mouse3D);
-    }
-
-    function handleUp(mouse3D){
-        if(isMouseOnBoard(mouse3D) && selectedPiece && !battle && !endGame){
-            var toBoardPos = worldToBoard(mouse3D); 
-            if((toBoardPos[0] === selectedPiece.boardPos[0] && toBoardPos[1] === selectedPiece.boardPos[1])){
-                deselectPiece();
-            } else{
-                if(callbacks.pieceCanDrop && callbacks.pieceCanDrop(toBoardPos, selectedPiece.pieceObj)){
-                    instance.movePiece(selectedPiece.boardPos, toBoardPos, initSet);
-                    if(callbacks.pieceDropped){
-                        callbacks.pieceDropped(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, toBoardPos, initSet);
-                        checkLoad(initSet);
-                    }
-                    selectedPiece = null;
-                }else{
-                    deselectPiece();
-                }
-            }
-        }else{
-            deselectPiece();
-        }
-        cameraController.enabled = true;
-        initSet = false;
-    }
-
-    /**
-     * Listener for mouse move event.
-     * Moves position of piece according to mouse position if piece is selected
-     */
-    function onMouseMove(event){    
-        var mouse3D = getMouse3D(event, renderer, camera);
-        handleMove(mouse3D);
-    }
-
-    function onTouchMove(event){
-        var mouse3D = getTouch3D(event, renderer, camera);
-        handleMove(mouse3D);
-    }
-
-    function handleMove(mouse3D){
-        if(selectedPiece && !battle && !endGame){
-            selectedPiece.obj.position.x= mouse3D.x;
-            selectedPiece.obj.position.z = mouse3D.z;
-            selectedPiece.obj.position.y = 3;
-        }
-    }
-
-    /**
-     * Listener for double click event.
-     * Selects piece from mouse position
-     * Calls callbacks to check if piece can be rotated and saves the rotation
-     * Rotates piece in the board
-     * Deselects piece
-     */
-    function onDoubleClick(event){
-        var mouse3D = getMouse3D(event, renderer, camera);
-
-        if(isMouseOnBoard(mouse3D) && !battle && !endGame){
-            if(isPieceOnMousePosition(mouse3D)){
-                selectPiece(mouse3D, false);
-                if(selectedPiece){
-                    var center = worldToBoard(selectedPiece.obj.position);
-                    if(callbacks.pieceCanRotate && callbacks.pieceCanRotate(selectedPiece.pieceObj, center)){
-                        instance.rotatePiece(center);
-                        if(callbacks.pieceDropped){
-                            callbacks.pieceDropped(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, center, initSet);
-                        }
-                        selectedPiece = null;
-                    }else{
-                        deselectPiece();
-                    }
-                }else{
-                    deselectPiece();
-                }
-            }
-        }
-    }
-
-    /**
-     * Listener for click event.
-     * Starts the game if start button is clicked
-     */
-    function onMouseClick(event){
-        var mouse3D = getYMouse3D(event, renderer, camera);
-        if(!battle && !setting && !endGame) { // phase 1: construction of board
-            if(communication && isStartOnMousePosition(mouse3D)){
-                scene.remove(startButton);
-                battle = true;
-                if(recievedId){
-                    if(myTurn){
-                        scene.add(myTurnMsg);
-                    }else{
-                        scene.add(oppTurnMsg);
-                    }
-                } else{
-                    waitMsg = new THREE.Mesh(geometries.textGeom, materials.waitMaterial);
-                    waitMsg.position.set(-50, 50, 0);
-                    scene.add(waitMsg);
-                }
-                if(callbacks.sendId){
-                    callbacks.sendId();
-                }
-            }
-        }else{ // phase 2: game
-            if(isMouseOnOppBoard(mouse3D) && myTurn && !endGame){
-                target = [ Math.floor(mouse3D.x / squareSize) , Math.floor((squareSize * 11 - mouse3D.y) / squareSize)] 
-                if(callbacks.selectTarget){
-                    callbacks.selectTarget(target);
-                    //renderer.domElement.removeEventListener('click', onMouseClick, false);
-                    
-                }
-            }
-
-        }
-    }
-
-    /**
      * Saves piece and mesh in the board according to the piece's position.
      * @param {Object} piece The piece object.
      * @param {THREE.Mesh} mesh The piece Mesh object.
@@ -1080,29 +894,6 @@ BATTLESHIP.BoardController = function (options) {
         }
     }
 
-    /**
-     * Checks whether there is a piece at the mouse's position.
-     * @param {Array} pos The coordinates of the mouse position in the scene.
-     * return {boolean}.
-     */
-    function isPieceOnMousePosition(pos){
-        var boardPos = worldToBoard(pos);
-        if(boardPos){
-            console.log('board[',boardPos[0],'][', boardPos[1],'] = ', board[boardPos[0]][boardPos[1]]);
-        }
-        if(boardPos && board[boardPos[0]][boardPos[1]] !== 0){
-            return true;
-        }
-        return false;
-    }
-
-    function isShipInitOnMousePosition(pos){
-        var boardPos = worldToInitBoard(pos);
-        if(boardPos && initBoard[boardPos[0]][boardPos[1]] !== 0 && initBoard[boardPos[0]][boardPos[1]] !== undefined ){
-            return true;
-        }
-        return false;
-    }
 
     /**
      * Updates selectedPiece with the objects related to the object in the position given.

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="keywords" content="WebRTC, HTML5, JavaScript" />
+<meta name="description" content="WebRTC Reference App" />
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+<meta charset="UTF-8"> 
+
+<link href="/stylesheets/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/stylesheets/style.css" rel="stylesheet">
+<script src='/socket.io/socket.io.js'></script>
+
+
+<title>Battleship</title>
+</head>
+
+<body onload="randomGen();">
+<script type="text/javascript">
+
+	var socket = io('/123');
+
+
+    function sendName() {
+        var page = document.getElementById('page').value;
+        socket.emit('sendRoomName', page);
+        document.getElementById('p0').style = "display:none"
+        document.getElementById('p1').style = "display:true"
+	}
+
+
+    function randomGen(){
+    	var val = Math.floor((1 + Math.random()) * 0x100000000)
+		    .toString(16)
+		    .substring(1);
+		document.getElementById('page').value = val;
+    }
+</script>
+<div id="p0" style="display:none">
+	<h2 class="bg-primary" ><b>Battleship</h2>
+	<div class="container-fluid">
+		<div class="row">
+		<div class="col-xs-4 col-xs-offset-4">
+	 		<p> Please enter room name: </p>
+	 			<input type="text" id="page" />
+			<p></p>
+			<input type="submit" value="Ok" onclick="sendName();" />
+			<input type="submit" value="Random" onclick="randomGen();" />
+	 	</div>
+	 	</div>
+	</div>
+
+</div>
+<div id="p1" style = "display:true">
+	<div role="main" class="ui-content">
+		<div class="container-fluid">
+			<div class="row">
+			<div class="col-xs-12">
+				<svg xmlns="httplo://www.w3.org/2000/svg" viewBox="0 0 30 30" id="svg">
+
+					<rect x="11" y=".5" width="17" height="17" stroke="black" stroke-width="0.1" fill="#D3D3D3" ontouchstart="coordinates(event)"></rect>
+					<path  stroke="black"  stroke-width="0.1"  fill="none"  
+					d="M11, 2.2H28v1.7H11zm0,
+					1.7H28v1.7H11zm0,
+					1.7H28v1.7H11zm0,
+					1.7H28v1.7H11zm0,
+					1.7H28v1.7H11zm0,
+					1.7H28v1.7H11zm0,
+					1.7H28v1.7H11zm0,
+					1.7H28v1.7H11zM12.7,
+					0.5V17.5h1.7V0.5zm1.7,
+					0V17.5h1.7V0.5zm1.7,
+					0V17.5h1.7V0.5zm1.7,
+					0V17.5h1.7V0.5zm1.7,
+					0V17.5h1.7V0.5zm1.7,
+					0V17.5h1.7V0.5zm1.7,
+					0V17.5h1.7V0.5zm1.7,
+					0V17.5h1.7V0.5z
+
+				
+					"
+					/>
+					<rect id="1" x="0.5" y="3" width="8" height="1.25" stroke="black" stroke-width="0.1" fill="#F00" ontouchstart="onMouseDown(event)"></rect>
+					<rect id="2" x="0.5" y="6" width="6.5" height="1.25" stroke="black" stroke-width="0.1" fill="#F00" ontouchstart="onMouseDown(event)"></rect>
+					<rect id="3" x="0.5" y="9" width="4.75" height="1.25" stroke="black" stroke-width="0.1" fill="#F00" ontouchstart="onMouseDown(event)"></rect>
+					<rect id="4" x="0.5" y="12" width="3" height="1.25" stroke="black" stroke-width="0.1" fill="#F00" ontouchstart="onMouseDown(event)"></rect>
+					<rect id="5" x="5.5" y="12" width="3" height="1.25" stroke="black" stroke-width="0.1" fill="#F00" ontouchstart="onMouseDown(event)"></rect>
+					<rect id="6" x="0.5" y="15" width="1.25" height="1.25" stroke="black" stroke-width="0.1" fill="#F00" ontouchstart="onMouseDown(event)"></rect>
+					<rect id="7" x="5.5" y="15" width="1.25" height="1.25" stroke="black" stroke-width="0.1" fill="#F00" ontouchstart="onMouseDown(event)"></rect>
+
+					
+				</svg>
+			</div>
+		 	</div>
+		</div>
+	</div>
+</div>
+
+<script src='/javascripts/svgController.js'></script>
+
+
+
+</body>
+</html>
