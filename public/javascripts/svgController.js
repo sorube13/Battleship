@@ -4,15 +4,6 @@ var nMouseOffsetX = 0;
 var nMouseOffsetY = 0;
 var tapped = false;
 
-/*
-domElement.addEventListener('mousedown', onMouseDown, false);
-domElement.addEventListener('touchstart', onTouchStart, false);
-domElement.addEventListener('mouseup', onMouseUp, false);
-domElement.addEventListener('touchend', onTouchEnd, false);
-domElement.addEventListener('dblclick', onDoubleClick, false);
-renderer.domElement.addEventListener("click", onMouseClick, false);
-*/
-
 function onMouseDown(event){
 	selectedPiece = {};
     selectedPiece.obj = event.target;
