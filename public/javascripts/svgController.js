@@ -57,7 +57,20 @@ function single_tap(event){
 
 function doubletap(){
 	if(selectedPiece){
-		selectedPiece.obj.setAttribute("transform", "translate(" + selectedPiece.obj.getAttribute('width') + ") rotate(90)");
+		var x = selectedPiece.obj.getAttribute('x');
+		var y = selectedPiece.obj.getAttribute('y')
+		var w = selectedPiece.obj.getAttribute('width');
+		var h = selectedPiece.obj.getAttribute('height')
+		var orient = selectedPiece.obj.getAttribute('orientation');
+		selectedPiece.obj.setAttribute("width", h);
+		selectedPiece.obj.setAttribute("height", w);
+		selectedPiece.obj.setAttribute("orientation", 1 - orient);
+		var prevPos = svgToBoard(selectedPiece.posX, selectedPiece.posY);
+		var pos = svgToBoard(x, y);
+		removePiece(prevPos, selectedPiece.obj, orient);
+		placePiece(pos, selectedPiece.obj);
+		
+
 		console.log('double tap', selectedPiece.obj);
 		nMouseOffsetX = nMouseOffsetY = 0;
 		selectedPiece = null;	
@@ -95,7 +108,9 @@ function coordinates(event){
 	var p = document.getElementById('svg').createSVGPoint();
     p.x = event.targetTouches[0].pageX;
     p.y = event.targetTouches[0].pageY;
-    console.log('X:', Math.floor(10*(p.x -240)/345), 'Y:', Math.floor(10*(p.y -10)/345));
+    var x = Math.floor(10*(p.x -240)/345);
+    var y = Math.floor(10*(p.y -10)/345);
+    console.log('X:', x, 'Y:', y, " = ", myBoard[x][y]);
 
 }
 
@@ -130,7 +145,7 @@ function checkPosition(){
 				selectedPiece.obj.setAttribute('y', posSVG[1] + 0.2);
 				var prevPos = svgToBoard(selectedPiece.posX, selectedPiece.posY);
 				if(!(prevPos[0] < 0)){
-					removePiece(prevPos, selectedPiece.obj);
+					removePiece(prevPos, selectedPiece.obj, selectedPiece.obj.getAttribute('orientation'));
 				}else{
 					numShips++;
 					checkShips();
@@ -167,19 +182,39 @@ function placePiece(pos, piece){
     var x = pos[0];
     var y = pos[1];
     var w = getLength(parseFloat(piece.getAttribute('width')));
-   
-    for(var i = 0; i < w; i++ ){
-        myBoard[x+i][y] = piece;     
-    }
+    var h = getLength(parseFloat(piece.getAttribute('height')));
+    if(w > h){
+	    for(var i = 0; i < w; i++ ){
+	        myBoard[x+i][y] = piece;     
+	    }
+	}else{
+		for(var i = 0; i < h; i++ ){
+	        myBoard[x][y+h] = piece;     
+	    }
+	}
 }
 
-function removePiece(pos, piece){
+function removePiece(pos, piece, orient){
 	var x = pos[0];
     var y = pos[1];
+    console.log('pos:', x, y);
     var w = getLength(parseFloat(piece.getAttribute('width')));
-   
-    for(var i = 0; i < w; i++ ){
-        myBoard[x+i][y] = 0;     
+    var h = getLength(parseFloat(piece.getAttribute('height')));
+    if(w>h) {var l=w;}
+    else{var l = h;}
+
+   	if(parseInt(orient) === 1){
+   		console.log('orientation 1')
+   		
+	    for(var i = 0; i < l; i++ ){
+	        myBoard[x+i][y] = 0;     
+	    }
+    }else{
+    	console.log('orientation 0')
+		
+    	for(var i = 0; i < l; i++ ){
+	        myBoard[x][y+i] = 0;     
+	    }
     }
 }
 
