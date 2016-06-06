@@ -1,8 +1,23 @@
+'use strict'
+
 var selectedPiece = null;
 var bMouseDragging = true;
 var nMouseOffsetX = 0;
 var nMouseOffsetY = 0;
 var tapped = false;
+
+var myBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
 
 function onMouseDown(event){
 	selectedPiece = {};
@@ -62,8 +77,6 @@ function mouseMove(evt) {
     p.x = event.targetTouches[0].pageX;
     p.y = event.targetTouches[0].pageY;
     
-    // console.log('X:', event.targetTouches[0].pageX, 'Y:', event.targetTouches[0].pageY);
-    // console.log('pX:', p.x, 'pY:', p.y);
     if(bMouseDragging) {
         if(selectedPiece) {
     
@@ -100,24 +113,32 @@ function checkPosition(){
 	if(selectedPiece){
 		var x = selectedPiece.obj.getAttribute('x');
 		var y = selectedPiece.obj.getAttribute('y');
-		var width = getWidth(parseFloat(selectedPiece.obj.getAttribute('width')));
+		var width = getWidth(selectedPiece.obj);
 		var pos = svgToBoard(x, y);
-		console.log('pos:[', pos[0], ',', pos[1], '] width:', width);
 		if(pos[0] < 0 || pos[0] + width > 10 || pos[1] < 0 || pos[1] > 9){
-
 			selectedPiece.obj.setAttribute('x', selectedPiece.posX);
 			selectedPiece.obj.setAttribute('y', selectedPiece.posY);	
 		} else{
-			var posSVG = boardToSVG(pos[0], pos[1]);
-			selectedPiece.obj.setAttribute('x', posSVG[0] + 0.2);
-			selectedPiece.obj.setAttribute('y', posSVG[1] + 0.2);
+			if(!otherPiece(pos, width)){
+				selectedPiece.obj.setAttribute('x', selectedPiece.posX);
+				selectedPiece.obj.setAttribute('y', selectedPiece.posY);
+			}else{
+				var posSVG = boardToSVG(pos[0], pos[1]);
+				selectedPiece.obj.setAttribute('x', posSVG[0] + 0.2);
+				selectedPiece.obj.setAttribute('y', posSVG[1] + 0.2);
+				var prevPos = svgToBoard(selectedPiece.posX, selectedPiece.posY);
+				if(!(prevPos[0] < 0)){
+					removePiece(prevPos, selectedPiece.obj);
+				}
+				placePiece(pos, selectedPiece.obj);
+			}
 		}
 	}
 }
 
-function getWidth(w){
-	var width = 0;
-	switch(w){
+function getWidth(element){
+	var width = parseFloat(element.getAttribute('width'));
+	switch(width){
 		case 8:
 			return 5;
 			break;
@@ -135,5 +156,38 @@ function getWidth(w){
 			break;
 		default:
 			return;
+	}
+}
+
+function placePiece(pos, piece){
+    var x = pos[0];
+    var y = pos[1];
+    var w = getWidth(piece);
+   
+    for(var i = 0; i < w; i++ ){
+        myBoard[x+i][y] = piece;     
+    }
+}
+
+function removePiece(pos, piece){
+	var x = pos[0];
+    var y = pos[1];
+    var w = getWidth(piece);
+   
+    for(var i = 0; i < w; i++ ){
+        myBoard[x+i][y] = 0;     
+    }
+}
+
+function otherPiece(pos, width){
+	if(selectedPiece){
+		for(var i = 0; i < width; i++){
+			if(myBoard[pos[0]+i][pos[1]] !== 0){
+				selectedPiece.obj.setAttribute('x', selectedPiece.posX);
+				selectedPiece.obj.setAttribute('y', selectedPiece.posY);
+				return false;
+			}
+		}
+		return true;
 	}
 }
