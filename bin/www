@@ -32,7 +32,8 @@ var server = http.createServer(app);
 var io = require('socket.io')(server);
 
 var nsp = io.of('/123');
-
+// var nsp2 = io.of('room');
+// io.sockets
 io.sockets.on('connection', function (socket){
 
   // convenience function to log server messages on the client
@@ -82,8 +83,12 @@ io.sockets.on('connection', function (socket){
 });
 
 nsp.on('connection', function(socket){
+  console.log('user connected')
   socket.on('sendRoomName', function(room){
     nsp.emit('enteredName', room);
+  });
+  socket.on('startGame', function(msg){
+    nsp.emit('startedGame', msg);
   });
 });
 

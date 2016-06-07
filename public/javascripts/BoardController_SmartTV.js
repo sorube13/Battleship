@@ -6,6 +6,7 @@ BATTLESHIP.BoardController = function (options) {
     /**********************************************************************************************/
     /* Private properties *************************************************************************/
 
+
     /**
      * Store the instance of 'this' object.
      * @type BATTLESHIP.BoardController
@@ -201,8 +202,6 @@ BATTLESHIP.BoardController = function (options) {
                     pieceMesh.scale.x = 0.2;
                     setPiece(piece, pieceMesh);                    
                 });
-                // pieces.submarine = new THREE.Mesh(geometries.submarineGeom, materials.blackPieceMaterial);
-                // pieceMesh = pieces.submarine;
                 break;
             case 2:
                 loader.load(assetsUrl + pieceLoc, function(result){
@@ -210,8 +209,6 @@ BATTLESHIP.BoardController = function (options) {
                     pieceMesh.scale.x = 0.4;
                     setPiece(piece, pieceMesh);                    
                 });
-                // pieces.destroyer = new THREE.Mesh(geometries.destroyerGeom, materials.blackPieceMaterial);
-                // pieceMesh = pieces.destroyer;
                 break;
             case 3:
                 loader.load(assetsUrl + pieceLoc, function(result){
@@ -219,8 +216,6 @@ BATTLESHIP.BoardController = function (options) {
                     pieceMesh.scale.x = 0.6;
                     setPiece(piece, pieceMesh);                    
                 });
-                // pieces.cruiser = new THREE.Mesh(geometries.cruiserGeom, materials.blackPieceMaterial);
-                // pieceMesh = pieces.cruiser;
                 break;
             case 4:
                 loader.load(assetsUrl + pieceLoc, function(result){
@@ -228,16 +223,12 @@ BATTLESHIP.BoardController = function (options) {
                     pieceMesh.scale.x = 0.8;
                     setPiece(piece, pieceMesh);                    
                 });
-                // pieces.battleship = new THREE.Mesh(geometries.battleshipGeom, materials.blackPieceMaterial);
-                // pieceMesh = pieces.battleship;
                 break;
             case 5:
                 loader.load(assetsUrl + pieceLoc, function(result){
                     pieceMesh = result.scene;
                     setPiece(piece, pieceMesh);                    
                 });
-                // pieces.carrier = new THREE.Mesh(geometries.carrierGeom, materials.blackPieceMaterial);
-                // pieceMesh = pieces.carrier;
                 break;
             default:
                 break;
@@ -251,10 +242,9 @@ BATTLESHIP.BoardController = function (options) {
         scene.add(pieceMesh);
     }
 
-    this.movePiece = function(from, to, initSet){
+    this.movePiece = function(from, to, initSet, rotate){
         var pieceMesh = selectedPiece.obj; // board[from[0]][from[1]].pieceMesh;
         var piece = selectedPiece.pieceObj;// board[from[0]][from[1]].piece;
-        var toWorldPos = boardToWorld(to);
 
         if(initSet){
             var myBoard = initBoard;
@@ -264,49 +254,55 @@ BATTLESHIP.BoardController = function (options) {
 
         // // Delete piece from previous position + add piece to new position
         removePiece(piece, selectedPiece.origOrient, selectedPiece.origPos, myBoard);
+
+        piece.pos[0] = to[0];
+        piece.pos[1] = to[1];
+
+        if(rotate){
+            selectedPiece.obj.rotation.y += 90 * Math.PI / 180;  
+            selectedPiece.pieceObj.orientation = 1 - selectedPiece.pieceObj.orientation;
+        }
+        var toWorldPos = boardToWorld(posToCenter(piece, to));
+
         
         if(piece.type % 2){ // if odd
             pieceMesh.position.x = toWorldPos.x;
             pieceMesh.position.z = toWorldPos.z; 
-            if(piece.orientation === 1){
-                piece.pos[0] = to[0] - Math.floor(piece.type / 2);
-                piece.pos[1] = to[1];
-            } else{
-                piece.pos[0] = to[0];
-                piece.pos[1] = to[1] - Math.floor(piece.type / 2);
-            }
             
         } else{
             if(piece.orientation === 1){
                 pieceMesh.position.x = toWorldPos.x + squareSize / 2;
                 pieceMesh.position.z = toWorldPos.z; 
-                piece.pos[0] = to[0] - piece.type / 2 + 1;
-                piece.pos[1] = to[1];
             } else{
                 pieceMesh.position.x = toWorldPos.x ;
                 pieceMesh.position.z = toWorldPos.z + squareSize / 2; 
-                piece.pos[0] = to[0];
-                piece.pos[1] = to[1] - piece.type / 2 + 1;
             }
         }
+
         checkInside();
         placePiece(piece, pieceMesh, board);     
         pieceMesh.position.y = 3.48;
     }
     
-    this.rotatePiece = function(center){
+    this.rotatePiece = function(to){
         selectedPiece.obj.rotation.y += 90 * Math.PI / 180;  
         selectedPiece.pieceObj.orientation = 1 - selectedPiece.pieceObj.orientation;
-        selectedPiece.pieceObj.pos = centerToPos(selectedPiece.pieceObj, center);
-        if(!(selectedPiece.pieceObj.type % 2)){
-            if(selectedPiece.pieceObj.orientation===1){
-                selectedPiece.obj.position.x += squareSize / 2;
-            }else{
-                selectedPiece.obj.position.x -= squareSize / 2;
-            }
-            selectedPiece.obj.position.z += squareSize / 2;
-        }
-        checkInside();
+        
+        var centerBoard = posToCenter(selectedPiece.pieceObj, to);
+        var centerWorld = boardToWorld(centerBoard);
+        selectedPiece.obj.position.x = centerWorld[0];
+        selectedPiece.obj.position.z = centerWorld[1];
+
+
+        // if(!(selectedPiece.pieceObj.type % 2)){
+        //     if(selectedPiece.pieceObj.orientation===1){
+        //         selectedPiece.obj.position.x += squareSize / 2;
+        //     }else{
+        //         selectedPiece.obj.position.x -= squareSize / 2;
+        //     }
+        //     selectedPiece.obj.position.z += squareSize / 2;
+        // }
+        // checkInside();
         removePiece(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, board);
         placePiece(selectedPiece.pieceObj, selectedPiece.obj, board);
     }
@@ -908,13 +904,18 @@ BATTLESHIP.BoardController = function (options) {
         }
      * return {boolean}.
      */
-    function selectPiece(pos, initSet){
-        if(initSet){
-            var boardPos = worldToInitBoard(pos);
-            var myBoard = initBoard;
+    function selectPiece(pos, initSet, contr){
+        if(!contr){
+            if(initSet){
+                var boardPos = worldToInitBoard(pos);
+                var myBoard = initBoard;
+            }else{
+                var boardPos = worldToBoard(pos);
+                var myBoard = board;
+            }
         }else{
-            var boardPos = worldToBoard(pos);
-            var myBoard = board;
+            var boardPos = pos;
+            var myBoard = initBoard;
         }
         if(myBoard[boardPos[0]][boardPos[1]] === 0 || myBoard[boardPos[0]][boardPos[1]] === 'x' || myBoard[boardPos[0]][boardPos[1]] === 1){
             selectedPiece = null;
@@ -992,6 +993,28 @@ BATTLESHIP.BoardController = function (options) {
         }
     }
 
+    this.updateBoard = function(msg){
+        var coordsInitShip={
+            1: [0,0],
+            2: [0,2],
+            3: [0,4],
+            4: [0,6],
+            5: [3,6],
+            6: [0,8],
+            7: [2,8]
+        }
+        for(var i = 1; i <= Object.keys(msg).length; i++){
+            var pos = coordsInitShip[i];
+            selectPiece(pos, true, true);
+            var rotate = false;
+            if(msg[i].orientation === 0){
+                rotate = true;
+            }
+            instance.movePiece(selectedPiece.boardPos, msg[i].pos, true, rotate);
+            console.log('myBoard['+ msg[i].pos[0] + "]["+msg[i].pos[1] + "] = ", board[msg[i].pos[0]][msg[i].pos[1]]);
+            selectedPiece = null;
+        }
+    }
 
 };
 

@@ -87,7 +87,15 @@ var room =  location.pathname.substring(3);//prompt('Enter room name:', default_
 // document.querySelector('#roomTitle').innerHTML += room;
 
 // Connect to signalling server
-var socket = io.connect();
+var socket = io.connect();;
+var socket2 = io('/123');
+
+socket2.on('startedGame', function(msg){
+    console.log('>>>>>>> ' , msg);
+    var board = msg;
+    game.updateBoard(board);
+    //boardController.updateBoard(board);
+});
 
 // Send 'Create or join' message to singnalling server
 if (room !== '') {

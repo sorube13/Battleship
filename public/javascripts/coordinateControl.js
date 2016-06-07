@@ -218,6 +218,30 @@ function centerToPos(piece, to){
     return [x, y];
 }
 
+
+function posToCenter(piece, to){
+    var x, y;
+    if(piece.type % 2){ // if odd
+       if(piece.orientation === 1){
+            x = to[0] + Math.floor(piece.type / 2);
+            y = to[1];
+        } else{
+            x = to[0];
+            y = to[1] + Math.floor(piece.type / 2);
+        }
+        
+    } else{
+        if(piece.orientation === 1){
+            x = to[0] + piece.type / 2 - 1;
+            y = to[1];
+        } else{
+            x = to[0];
+            y = to[1] + piece.type / 2 - 1;
+        }
+    }
+    return [x, y];
+}
+
 /**
  * Checks whether the mouse is on the opponent's board.
  * @param {Array} pos The coordinates of the mouse position in the scene.

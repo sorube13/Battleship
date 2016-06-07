@@ -170,6 +170,7 @@ BATTLESHIP.Game = function(options){
             pos: [2, 8]
         };
         boardController.addPiece(piece);
+
     }
 
     /**
@@ -546,6 +547,11 @@ BATTLESHIP.Game = function(options){
                 boardController.endGame(true);
             }
         }
+    }
+
+    this.updateBoard = function(board){
+        boardController.updateBoard(board);
+        console.log('reached game');
     }
     
 

@@ -20,6 +20,8 @@ var myBoard = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
+var pieces={};
+
 function onMouseDown(event){
 	selectedPiece = {};
     selectedPiece.obj = event.target;
@@ -39,7 +41,6 @@ function onMouseDown(event){
 
 function single_tap(event){
 	bMouseDragging = true;
-    // console.log('posX:',selectedPiece.posX, 'posY:',selectedPiece.posY);
 
 	if(selectedPiece){
 		var p = document.getElementById('svg').createSVGPoint();
@@ -62,24 +63,26 @@ function doubletap(){
 		var w = selectedPiece.obj.getAttribute('width');
 		var h = selectedPiece.obj.getAttribute('height')
 		var orient = selectedPiece.obj.getAttribute('orientation');
-		selectedPiece.obj.setAttribute("width", h);
-		selectedPiece.obj.setAttribute("height", w);
-		selectedPiece.obj.setAttribute("orientation", 1 - orient);
 		var prevPos = svgToBoard(selectedPiece.posX, selectedPiece.posY);
 		var pos = svgToBoard(x, y);
-		removePiece(prevPos, selectedPiece.obj, orient);
-		placePiece(pos, selectedPiece.obj);
-		
+		if(checkRotation(pos, 1 - orient)){
+		// if(otherPiece(pos, h, w)){
+			selectedPiece.obj.setAttribute("width", h);
+			selectedPiece.obj.setAttribute("height", w);
+			selectedPiece.obj.setAttribute("orientation", 1 - orient);
+			removePiece(prevPos, selectedPiece.obj, orient);
+			placePiece(pos, selectedPiece.obj);
+		}
 
-		console.log('double tap', selectedPiece.obj);
 		nMouseOffsetX = nMouseOffsetY = 0;
-		selectedPiece = null;	
+		selectedPiece = null;
+
 	}
 	
 }
 
 function mouseUp(evt) { 
-	if(selectedPiece){
+	if(selectedPiece && !tapped){
 		bMouseDragging = false;
 		checkPosition();
 	    nMouseOffsetX = nMouseOffsetY = 0;
@@ -131,12 +134,14 @@ function checkPosition(){
 		var x = selectedPiece.obj.getAttribute('x');
 		var y = selectedPiece.obj.getAttribute('y');
 		var width = getLength(parseFloat(selectedPiece.obj.getAttribute('width')));
+		var height = getLength(parseFloat(selectedPiece.obj.getAttribute('height')));
+		var orient = parseInt(selectedPiece.obj.getAttribute('orientation'));
 		var pos = svgToBoard(x, y);
-		if(pos[0] < 0 || pos[0] + width > 10 || pos[1] < 0 || pos[1] > 9){
+		if(pos[0] < 0 || pos[0] + width > 10 || pos[1] < 0 || pos[1] + height > 10){
 			selectedPiece.obj.setAttribute('x', selectedPiece.posX);
 			selectedPiece.obj.setAttribute('y', selectedPiece.posY);	
 		} else{
-			if(!otherPiece(pos, width)){
+			if(!otherPiece(pos, width, height, orient)){
 				selectedPiece.obj.setAttribute('x', selectedPiece.posX);
 				selectedPiece.obj.setAttribute('y', selectedPiece.posY);
 			}else{
@@ -189,43 +194,50 @@ function placePiece(pos, piece){
 	    }
 	}else{
 		for(var i = 0; i < h; i++ ){
-	        myBoard[x][y+h] = piece;     
+	        myBoard[x][y+i] = piece;   
 	    }
 	}
+	updatePieces(piece, pos);
 }
 
 function removePiece(pos, piece, orient){
 	var x = pos[0];
     var y = pos[1];
-    console.log('pos:', x, y);
     var w = getLength(parseFloat(piece.getAttribute('width')));
     var h = getLength(parseFloat(piece.getAttribute('height')));
     if(w>h) {var l=w;}
     else{var l = h;}
 
    	if(parseInt(orient) === 1){
-   		console.log('orientation 1')
-   		
 	    for(var i = 0; i < l; i++ ){
-	        myBoard[x+i][y] = 0;     
+	        myBoard[x+i][y] = 0;   
 	    }
     }else{
-    	console.log('orientation 0')
-		
     	for(var i = 0; i < l; i++ ){
-	        myBoard[x][y+i] = 0;     
+	        myBoard[x][y+i] = 0;  
 	    }
     }
 }
 
-function otherPiece(pos, width){
+function otherPiece(pos, width, height, orientation){
 	if(selectedPiece){
-		for(var i = 0; i < width; i++){
-			if(myBoard[pos[0]+i][pos[1]] !== 0 &&
-				myBoard[pos[0]+i][pos[1]].getAttribute('id') !== selectedPiece.obj.getAttribute('id')){
-				selectedPiece.obj.setAttribute('x', selectedPiece.posX);
-				selectedPiece.obj.setAttribute('y', selectedPiece.posY);
-				return false;
+		if(orientation === 1){
+			for(var i = 0; i < width; i++){
+				if(myBoard[pos[0]+i][pos[1]] && myBoard[pos[0]+i][pos[1]]!== 0 &&
+					myBoard[pos[0]+i][pos[1]].getAttribute('id') !== selectedPiece.obj.getAttribute('id')){
+					selectedPiece.obj.setAttribute('x', selectedPiece.posX);
+					selectedPiece.obj.setAttribute('y', selectedPiece.posY);
+					return false;
+				}
+			}
+		}else{
+			for(var i = 0; i < width; i++){
+				if(myBoard[pos[0]][pos[1]+i] && myBoard[pos[0]][pos[1]+i] !== 0 &&
+					myBoard[pos[0]][pos[1]+i].getAttribute('id') !== selectedPiece.obj.getAttribute('id')){
+					selectedPiece.obj.setAttribute('x', selectedPiece.posX);
+					selectedPiece.obj.setAttribute('y', selectedPiece.posY);
+					return false;
+				}
 			}
 		}
 		return true;
@@ -238,6 +250,56 @@ function checkShips(){
 	}
 }
 
-function startGame(){
-	console.log('Game Started');
+function checkRotation(pos, orient){
+	if(selectedPiece){
+		var x = pos[0];
+		var y = pos[1];
+		var w = getLength(parseFloat(selectedPiece.obj.getAttribute('width')));
+		var h = getLength(parseFloat(selectedPiece.obj.getAttribute('height')));
+		
+		if(orient === 1){
+			if(x + h > myBoard.length - 1){
+				x = myBoard.length - h;
+				selectedPiece.obj.setAttribute('x', boardToSVG(x, y)[0] + 0.2);
+			}
+		}else{
+			if(y + w > myBoard.length){
+				y = myBoard.length - w;
+				selectedPiece.obj.setAttribute('y', boardToSVG(x, y)[1] + 0.2);
+			}
+		}
+		if(!(otherPiece(pos, w, h, orient))){
+			selectedPiece.obj.setAttribute('x', selectedPiece.posX);
+			selectedPiece.obj.setAttribute('y', selectedPiece.posY);
+			return false;
+		}
+		
+		return true;	
+	}else{
+		return false;
+	}
 }
+
+function updatePieces(piece, pos){
+	var id = piece.getAttribute('id');
+	var orientation = parseInt(piece.getAttribute('orientation'));
+	var length;
+	if(orientation === 1){
+		length = getLength(parseFloat(piece.getAttribute('width'))); 
+	} else{
+		length = getLength(parseFloat(piece.getAttribute('height')));
+	}
+	pieces[id] = {
+		'id': id,
+		'type': length,
+		'orientation': orientation,
+		'pos': pos
+	}
+}
+
+function startGame(){
+	console.log('Game Started', pieces);
+	socket.emit('startGame', pieces);
+}
+
+
