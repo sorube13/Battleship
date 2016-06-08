@@ -31,10 +31,12 @@ app.set('port', port);
 var server = http.createServer(app);
 var io = require('socket.io')(server);
 
-var nsp = io.of('/123');
-// var nsp2 = io.of('room');
+var controller = io.of('/controller');
+//var room = io.of('/room');
 // io.sockets
 io.sockets.on('connection', function (socket){
+    console.log('[ROOM SOCKET] user connection', Object.keys(io.sockets.connected).length);
+    socket.emit('start', 'hello');
 
   // convenience function to log server messages on the client
     function log(){
@@ -44,7 +46,6 @@ io.sockets.on('connection', function (socket){
       }
         socket.emit('log', array);
     }
-    console.log('user connection');
     socket.on('disconnect', function(){
       console.log('user disconnection');
     });
@@ -57,6 +58,7 @@ io.sockets.on('connection', function (socket){
 
     socket.on('create or join', function (room) {
         var numClients = Object.keys(io.sockets.connected).length;
+        console.log('numClients', numClients);
 
         log('Room ' + room + ' has ' + numClients + ' client(s)');
         log('Request to create or join room ' + room);
@@ -69,7 +71,10 @@ io.sockets.on('connection', function (socket){
             socket.join(room);
             socket.emit('joined', room);
         } else { // max two clients
-            socket.emit('full', room);
+            io.sockets.in(room).emit('join', room);
+            socket.join(room);
+            socket.emit('joined', room);
+            //socket.emit('full', room);
         }
         socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
         socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
@@ -82,13 +87,15 @@ io.sockets.on('connection', function (socket){
 
 });
 
-nsp.on('connection', function(socket){
-  console.log('user connected')
+controller.on('connection', function(socket){
+  console.log('[CONTROLLER SOCKET] user connected');
   socket.on('sendRoomName', function(room){
-    nsp.emit('enteredName', room);
+    console.log('[CS] received room name', room);
+    controller.emit('enteredName', room);
   });
   socket.on('startGame', function(msg){
-    nsp.emit('startedGame', msg);
+    console.log('[CONTROLLER SOCKET] Start Game')
+    controller.emit('startedGame', msg);
   });
 });
 

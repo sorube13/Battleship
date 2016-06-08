@@ -29,9 +29,11 @@
 </div>
 
 <script type="text/javascript">
-	var socket = io('/123');
+	var socket = io('/controller');
+	console.log('[CS tv]created socket')
 
 	socket.on('enteredName', function(msg){
+		console.log('entered name');
 		window.location = window.location +"/r/" + msg;
 	});
 </script>

@@ -298,8 +298,11 @@ function updatePieces(piece, pos){
 }
 
 function startGame(){
-	console.log('Game Started', pieces);
 	socket.emit('startGame', pieces);
+	console.log('Game Started', pieces);
+	document.getElementById('p1').style = "display:none"
+    document.getElementById('p2').style = "display:true"
+
 }
 
 

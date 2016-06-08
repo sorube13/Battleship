@@ -1,6 +1,7 @@
 
 'use strict';
 
+
 //Look after different browser vendors' ways of calling the getUserMedia() API method:
 //Opera --> getUserMedia
 //Chrome --> webkitGetUserMedia
@@ -79,7 +80,9 @@ var sdpConstraints = webrtcDetectedBrowser === 'firefox' ?
 
 // Let's get started: prompt user for input (room name)
 // var default_name = randomId();
-var room =  location.pathname.substring(3);//prompt('Enter room name:', default_name);
+var href = location.pathname;
+
+var room =  href.substr(href.lastIndexOf('/') + 1);//prompt('Enter room name:', default_name);
 // if(!room){
 //     room = default_name;
 // }
@@ -87,8 +90,9 @@ var room =  location.pathname.substring(3);//prompt('Enter room name:', default_
 // document.querySelector('#roomTitle').innerHTML += room;
 
 // Connect to signalling server
-var socket = io.connect();;
-var socket2 = io('/123');
+var socket = io.connect();
+//var socket = io('/room');
+var socket2 = io('/controller');
 
 socket2.on('startedGame', function(msg){
     console.log('>>>>>>> ' , msg);
@@ -96,12 +100,17 @@ socket2.on('startedGame', function(msg){
     game.updateBoard(board);
     //boardController.updateBoard(board);
 });
+ 
+socket.on('start', function(msg){
+    console.log('ROOM SOCKET >>>>>>>',msg);
+});
 
 // Send 'Create or join' message to singnalling server
 if (room !== '') {
     console.log('Create or join room', room);
     socket.emit('create or join', room);
     socket.emit('getCred');
+    //getIceServers();
 }
 
 // Set getUserMedia constraints
@@ -200,6 +209,7 @@ socket.on('ICE Candidates', function(cred){
     var url = 'https://service.xirsys.com/ice';
     var xhr = createCORSRequest('POST', url);
     xhr.onload = function() {
+        console.log('[ROOM SOCKET]>>>', xhr);
         var iceServers = JSON.parse(xhr.responseText).d.iceServers;
         pc_config.iceServers = iceServers;
     };
@@ -302,11 +312,11 @@ function handleSendChannelStateChange() {
     trace('Send channel state is: ' + readyState);
     // If channel ready, enable user's input
     if (readyState == "open") {
-        dataChannelSend.disabled = false;
-        dataChannelSend.focus();
-        dataChannelSend.placeholder = "";
+        // dataChannelSend.disabled = false;
+        // dataChannelSend.focus();
+        // dataChannelSend.placeholder = "";
     } else {
-        dataChannelSend.disabled = true;
+        //dataChannelSend.disabled = true;
     }
 }
 
@@ -315,11 +325,11 @@ function handleReceiveChannelStateChange() {
     trace('Receive channel state is: ' + readyState);
     // If channel ready, enable user's input
     if (readyState == "open") {
-        dataChannelSend.disabled = false;
-        dataChannelSend.focus();
-        dataChannelSend.placeholder = "";
+        // dataChannelSend.disabled = false;
+        // dataChannelSend.focus();
+        // dataChannelSend.placeholder = "";
     } else {
-        dataChannelSend.disabled = true;
+        // dataChannelSend.disabled = true;
     }
 }
 

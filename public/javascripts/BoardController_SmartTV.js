@@ -293,16 +293,6 @@ BATTLESHIP.BoardController = function (options) {
         selectedPiece.obj.position.x = centerWorld[0];
         selectedPiece.obj.position.z = centerWorld[1];
 
-
-        // if(!(selectedPiece.pieceObj.type % 2)){
-        //     if(selectedPiece.pieceObj.orientation===1){
-        //         selectedPiece.obj.position.x += squareSize / 2;
-        //     }else{
-        //         selectedPiece.obj.position.x -= squareSize / 2;
-        //     }
-        //     selectedPiece.obj.position.z += squareSize / 2;
-        // }
-        // checkInside();
         removePiece(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, board);
         placePiece(selectedPiece.pieceObj, selectedPiece.obj, board);
     }
@@ -984,16 +974,20 @@ BATTLESHIP.BoardController = function (options) {
     }
 
     function awaitGame(){
-        if(communication && (!setting)){
+        if(communication){
             scene.remove(text);
-            startButton = new THREE.Mesh(geometries.textGeom, materials.startMaterial);
-            startButton.position.set(-50, 50, 0);
-            scene.add(startButton);
-            renderer.domElement.addEventListener("click", onMouseClick, false);
+            battle = true
+            // startButton = new THREE.Mesh(geometries.textGeom, materials.startMaterial);
+            // startButton.position.set(-50, 50, 0);
+            // scene.add(startButton);
+            // renderer.domElement.addEventListener("click", onMouseClick, false);
         }
     }
 
     this.updateBoard = function(msg){
+        if(callbacks.sendId){
+            callbacks.sendId();
+        }
         var coordsInitShip={
             1: [0,0],
             2: [0,2],
