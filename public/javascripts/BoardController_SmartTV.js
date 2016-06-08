@@ -300,7 +300,6 @@ BATTLESHIP.BoardController = function (options) {
     this.setTurn = function(turn){
         myTurn = turn;
         recievedId = true;
-        console.log('>>>>>>>>>>>SET TURN', waitMsg, 'battle', battle);
         scene.remove(waitMsg);
         if(battle){
             if(myTurn){
@@ -960,10 +959,8 @@ BATTLESHIP.BoardController = function (options) {
     }
 
     function awaitGame(){
-        console.log('>>>>>>>>>awaitGame. communication',communication, 'setting', setting, 'recievedId', recievedId );
         if(communication && !setting){
             scene.remove(text);
-            console.log('>>>>>>>>>awaitGame', recievedId);
             battle = true
             if(recievedId){
                 scene.remove(waitMsg);
@@ -1003,7 +1000,7 @@ BATTLESHIP.BoardController = function (options) {
                 rotate = true;
             }
             instance.movePiece(selectedPiece.boardPos, msg[i].pos, true, rotate);
-            console.log('myBoard['+ msg[i].pos[0] + "]["+msg[i].pos[1] + "] = ", board[msg[i].pos[0]][msg[i].pos[1]]);
+            //console.log('myBoard['+ msg[i].pos[0] + "]["+msg[i].pos[1] + "] = ", board[msg[i].pos[0]][msg[i].pos[1]]);
             selectedPiece = null;
         }
         awaitGame();
