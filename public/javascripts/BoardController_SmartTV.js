@@ -300,6 +300,7 @@ BATTLESHIP.BoardController = function (options) {
     this.setTurn = function(turn){
         myTurn = turn;
         recievedId = true;
+        console.log('>>>>>>>>>>>SET TURN', waitMsg, 'battle', battle);
         scene.remove(waitMsg);
         if(battle){
             if(myTurn){
@@ -650,22 +651,12 @@ BATTLESHIP.BoardController = function (options) {
         boardModel = new THREE.Mesh(new THREE.CubeGeometry(squareSize * 10 + 20, 5, squareSize * 10 + 20), materials.boardMaterial);
         boardModel.position.set(squareSize * 5, -0.02, squareSize * 5);
         scene.add(boardModel);
-      
-
-        // add ground
-        // groundModel = new THREE.Mesh(new THREE.PlaneGeometry(squareSize * 10, squareSize * 10, 1, 1), materials.groundMaterial);
-        // groundModel.position.set(squareSize * 5, -0.02, squareSize * 5);
-        // groundModel.rotation.x = -90 * Math.PI / 180;
-        // //        
-        // scene.add(groundModel);
 
         // create the board squares
         var squareMaterial = materials.boardMaterial;
 
         for (var row = 0; row < 10; row++) {
             for (var col = 0; col < 10; col++) {
-               // squareMaterial = materials.squareMaterial;
-         
                 var square = new THREE.Mesh(new THREE.PlaneGeometry(squareSize, squareSize, 1, 0), squareMaterial);
          
                 square.position.x = col * squareSize + squareSize / 2;
@@ -724,15 +715,10 @@ BATTLESHIP.BoardController = function (options) {
                 scene.add(square);
             }
         }
-
-
-        geometries.carrierGeom = new THREE.CubeGeometry(squareSize * 5, 2, squareSize - 1 );
-        geometries.battleshipGeom = new THREE.CubeGeometry(squareSize * 4, 2, squareSize - 1);
-        geometries.cruiserGeom = new THREE.CubeGeometry(squareSize * 3, 2, squareSize - 1 );
-        geometries.destroyerGeom = new THREE.CubeGeometry(squareSize * 2, 2, squareSize - 1 );
-        geometries.submarineGeom = new THREE.CubeGeometry(squareSize, 2, squareSize - 1 );
+        
         geometries.textGeom = new THREE.CubeGeometry(squareSize * 5, squareSize * 2, 0 );
         geometries.pieceGeom = new THREE.CubeGeometry(squareSize / 3, squareSize *2, squareSize / 3);
+        
         
         hitPiece = new THREE.Mesh(geometries.pieceGeom, materials.hitMaterial);
         missPiece = new THREE.Mesh(geometries.pieceGeom, materials.missMaterial);
@@ -974,18 +960,30 @@ BATTLESHIP.BoardController = function (options) {
     }
 
     function awaitGame(){
-        if(communication){
+        console.log('>>>>>>>>>awaitGame. communication',communication, 'setting', setting, 'recievedId', recievedId );
+        if(communication && !setting){
             scene.remove(text);
+            console.log('>>>>>>>>>awaitGame', recievedId);
             battle = true
-            // startButton = new THREE.Mesh(geometries.textGeom, materials.startMaterial);
-            // startButton.position.set(-50, 50, 0);
-            // scene.add(startButton);
-            // renderer.domElement.addEventListener("click", onMouseClick, false);
+            if(recievedId){
+                scene.remove(waitMsg);
+                if(myTurn){
+                    scene.add(myTurnMsg);
+                }else{
+                    scene.add(oppTurnMsg);
+                }
+            }else{
+                waitMsg = new THREE.Mesh(geometries.textGeom, materials.waitMaterial);
+                waitMsg.position.set(-50, 50, 0);
+                scene.add(waitMsg);
+            }
+
         }
     }
 
     this.updateBoard = function(msg){
-        if(callbacks.sendId){
+        setting = false;
+        if(callbacks.sendId && communication){
             callbacks.sendId();
         }
         var coordsInitShip={
@@ -1008,6 +1006,7 @@ BATTLESHIP.BoardController = function (options) {
             console.log('myBoard['+ msg[i].pos[0] + "]["+msg[i].pos[1] + "] = ", board[msg[i].pos[0]][msg[i].pos[1]]);
             selectedPiece = null;
         }
+        awaitGame();
     }
 
 };
