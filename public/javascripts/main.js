@@ -94,6 +94,7 @@ var socket = io.connect();
 //var socket = io('/room');
 var socket2 = io('/controller');
 
+<<<<<<< HEAD
 socket2.on('startedGame', function(msg){
     console.log('>>>>>>> ' , msg);
     var board = msg;
@@ -108,6 +109,8 @@ socket2.on('hitTarget', function(pos){
 socket.on('start', function(msg){
     console.log('ROOM SOCKET >>>>>>>',msg);
 });
+=======
+>>>>>>> development
 
 // Send 'Create or join' message to singnalling server
 if (room !== '') {
@@ -146,11 +149,24 @@ function handleUserMediaError(error){
     console.log('navigator.getUserMedia error: ', error);
 }
 /////////////////////////////////////////////
-
-
 // Server-mediated message exchanging...
 /////////////////////////////////////////////
+/////////////////////////////////////////////
+// Controller message exchange .
+/////////////////////////////////////////////
 
+socket2.on('startedGame', function(msg){
+    console.log('>>>>>>> ' , msg);
+    var board = msg;
+    game.updateBoard(board);
+});
+
+socket2.on('startedGame', function(pos){
+    console.log('>>>>>>>>> game send target', pos);
+    game.sendT(pos);
+});
+
+/////////////////////////////////////////////
 // 1. Server-->Client...
 /////////////////////////////////////////////
 

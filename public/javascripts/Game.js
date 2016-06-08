@@ -415,6 +415,10 @@ BATTLESHIP.Game = function(options){
         sendData(pos);
     }
 
+    this.sendT = function(pos){
+        sendData(pos);
+    }
+
     function sendId(){
         var data = id;
         sendData(data);
