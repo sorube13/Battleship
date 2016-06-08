@@ -114,6 +114,8 @@ function coordinates(event){
     var x = Math.floor(10*(p.x -240)/345);
     var y = Math.floor(10*(p.y -10)/345);
     console.log('X:', x, 'Y:', y, " = ", myBoard[x][y]);
+    var pos = [x,y];
+    socket.emit('hitTarget', pos);
 
 }
 

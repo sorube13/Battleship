@@ -1003,6 +1003,7 @@ BATTLESHIP.BoardController = function (options) {
                 rotate = true;
             }
             instance.movePiece(selectedPiece.boardPos, msg[i].pos, true, rotate);
+            callbacks.pieceDropped(selectedPiece.pieceObj, msg[i].orientation, selectedPiece.boardPos, msg[i].pos, true);
             console.log('myBoard['+ msg[i].pos[0] + "]["+msg[i].pos[1] + "] = ", board[msg[i].pos[0]][msg[i].pos[1]]);
             selectedPiece = null;
         }

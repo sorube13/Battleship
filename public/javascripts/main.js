@@ -100,6 +100,10 @@ socket2.on('startedGame', function(msg){
     game.updateBoard(board);
     //boardController.updateBoard(board);
 });
+
+socket2.on('hitTarget', function(pos){
+    game.sendTarget(pos);
+})
  
 socket.on('start', function(msg){
     console.log('ROOM SOCKET >>>>>>>',msg);
