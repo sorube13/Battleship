@@ -94,24 +94,6 @@ var socket = io.connect();
 //var socket = io('/room');
 var socket2 = io('/controller');
 
-<<<<<<< HEAD
-socket2.on('startedGame', function(msg){
-    console.log('>>>>>>> ' , msg);
-    var board = msg;
-    game.updateBoard(board);
-    //boardController.updateBoard(board);
-});
-
-socket2.on('hitTarget', function(pos){
-    game.sendTarget(pos);
-})
- 
-socket.on('start', function(msg){
-    console.log('ROOM SOCKET >>>>>>>',msg);
-});
-=======
->>>>>>> development
-
 // Send 'Create or join' message to singnalling server
 if (room !== '') {
     console.log('Create or join room', room);
@@ -161,10 +143,11 @@ socket2.on('startedGame', function(msg){
     game.updateBoard(board);
 });
 
-socket2.on('startedGame', function(pos){
-    console.log('>>>>>>>>> game send target', pos);
-    game.sendT(pos);
-});
+socket2.on('hitTarget', function(pos){
+    game.sendTarget(pos);
+})
+ 
+
 
 /////////////////////////////////////////////
 // 1. Server-->Client...
