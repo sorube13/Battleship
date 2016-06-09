@@ -170,8 +170,6 @@ BATTLESHIP.BoardController = function (options) {
 
     var endGame = false;
 
-    var offsets = {};
-
 
     /**********************************************************************************************/
     /* Public methods *****************************************************************************/
@@ -279,7 +277,7 @@ BATTLESHIP.BoardController = function (options) {
             }
         }
 
-        checkInside();
+        //checkInside();
         placePiece(piece, pieceMesh, board);     
         pieceMesh.position.y = 3.48;
     }
@@ -299,6 +297,7 @@ BATTLESHIP.BoardController = function (options) {
 
     this.setTurn = function(turn){
         myTurn = turn;
+        console.log('reached setTurn', myTurn, 'battle', battle);
         recievedId = true;
         scene.remove(waitMsg);
         if(battle){
@@ -455,11 +454,9 @@ BATTLESHIP.BoardController = function (options) {
         
         containerEl.appendChild(renderer.domElement);
 
-        offsets = getOffset(containerEl);
 
         // Set window resize with THREE extension
         var winResize   = new THREEx.WindowResize(renderer, camera, function(){
-            offsets = getOffset(containerEl);
             return {width:containerEl.clientWidth, height: document.getElementById('content').clientHeight}
         });
     }
@@ -812,19 +809,7 @@ BATTLESHIP.BoardController = function (options) {
         return material;
     }
 
-    function getOffset(obj) {
-        var offsetLeft = 0;
-        var offsetTop = 0;
-        do {
-        if (!isNaN(obj.offsetLeft)) {
-          offsetLeft += obj.offsetLeft;
-        }
-        if (!isNaN(obj.offsetTop)) {
-          offsetTop += obj.offsetTop;
-        }   
-        } while(obj = obj.offsetParent );
-        return {left: offsetLeft, top: offsetTop};
-    }  
+    
 
     /**
      * Saves piece and mesh in the board according to the piece's position.
@@ -920,48 +905,14 @@ BATTLESHIP.BoardController = function (options) {
         selectedPiece = null;
     }
 
-    /**
-     * Checks whether the piece is outside the board and resets the coordinates so that it is inside.
-     */
-    function checkInside(){
-        var piece = selectedPiece.pieceObj;
-        var length = piece.type;
-        var orientation = piece.orientation;
-        var pos = piece.pos;
-
-        if(orientation === 0){
-            if(pos[1] < 0){
-                pos[1] = 0;
-                selectedPiece.obj.position.z = squareSize * length / 2;
-            } else if(pos[1] + length >= board.length){
-                pos[1] = board.length - length;
-                selectedPiece.obj.position.z = (board.length - length / 2) * squareSize;
-            }
-        } else {
-            if(pos[0] < 0){
-                pos[0] = 0;
-                selectedPiece.obj.position.x = squareSize * length / 2;
-            } else if(pos[0] + length >= board.length){
-                pos[0] = board.length - length;
-                selectedPiece.obj.position.x = (board.length - length / 2) * squareSize;
-            }
-        }    
-    }
-
-    function checkLoad(initSet){
-        if(initSet){
-            numShipsSet++;
-            if(numShipsSet === numShips){
-                setting = false;
-                awaitGame();
-            }
-        }
-    }
+    
 
     function awaitGame(){
+        console.log('awaitGame', communication, !setting);
         if(communication && !setting){
             scene.remove(text);
             battle = true
+            callbacks.sendId();
             if(recievedId){
                 scene.remove(waitMsg);
                 if(myTurn){
@@ -974,15 +925,14 @@ BATTLESHIP.BoardController = function (options) {
                 waitMsg.position.set(-50, 50, 0);
                 scene.add(waitMsg);
             }
-
+        }else if(communication){
+            waitMsg = new THREE.Mesh(geometries.textGeom, materials.waitMaterial);
+            waitMsg.position.set(-50, 50, 0);
+            scene.add(waitMsg);
         }
     }
 
     this.updateBoard = function(msg){
-        setting = false;
-        if(callbacks.sendId && communication){
-            callbacks.sendId();
-        }
         var coordsInitShip={
             1: [0,0],
             2: [0,2],
@@ -999,11 +949,13 @@ BATTLESHIP.BoardController = function (options) {
             if(msg[i].orientation === 0){
                 rotate = true;
             }
-            instance.movePiece(selectedPiece.boardPos, msg[i].pos, true, rotate);
-            callbacks.pieceDropped(selectedPiece.pieceObj, msg[i].orientation, selectedPiece.boardPos, msg[i].pos, true);
+            instance.movePiece(selectedPiece.boardPos, msg[i].pos, initSet, rotate);
+            callbacks.pieceDropped(selectedPiece.pieceObj, msg[i].orientation, selectedPiece.boardPos, msg[i].pos, initSet);
             //console.log('myBoard['+ msg[i].pos[0] + "]["+msg[i].pos[1] + "] = ", board[msg[i].pos[0]][msg[i].pos[1]]);
             selectedPiece = null;
         }
+        initSet = false;
+        setting = false;
         awaitGame();
     }
 

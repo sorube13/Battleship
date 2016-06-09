@@ -212,7 +212,6 @@ socket.on('ICE Candidates', function(cred){
     var url = 'https://service.xirsys.com/ice';
     var xhr = createCORSRequest('POST', url);
     xhr.onload = function() {
-        console.log('[ROOM SOCKET]>>>', xhr);
         var iceServers = JSON.parse(xhr.responseText).d.iceServers;
         pc_config.iceServers = iceServers;
     };
@@ -282,8 +281,7 @@ function createPeerConnection() {
     } else { // Joiner
         pc.ondatachannel = gotReceiveChannel;
     }
-
-    game.startCommunication();
+    
 }
 
 // Data channel management
@@ -291,7 +289,7 @@ function sendData(data) {
     if(isInitiator) sendChannel.send(data);
     else receiveChannel.send(data);
     trace('Sent data: ' + data);
-    //console.log('data:', data, typeof(data));
+    // console.log('data:', data, typeof(data));
 }
 
 // Handlers...
@@ -306,7 +304,7 @@ function gotReceiveChannel(event) {
 
 function handleMessage(event) {
     trace('Received message: ' + event.data);
-    console.log('Received message', event, typeof(event.data));
+    // console.log('Received message', event, typeof(event.data));
     game.receiveFromOpponent(event.data);
 }
 
@@ -315,6 +313,8 @@ function handleSendChannelStateChange() {
     trace('Send channel state is: ' + readyState);
     // If channel ready, enable user's input
     if (readyState == "open") {
+        trace('>>>>>> Started Communications');
+        game.startCommunication();
         // dataChannelSend.disabled = false;
         // dataChannelSend.focus();
         // dataChannelSend.placeholder = "";

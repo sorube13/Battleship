@@ -198,7 +198,6 @@ socket.on('ICE Candidates', function(cred){
     var url = 'https://service.xirsys.com/ice';
     var xhr = createCORSRequest('POST', url);
     xhr.onload = function() {
-        console.log('[ROOM SOCKET]>>>', xhr);
         var iceServers = JSON.parse(xhr.responseText).d.iceServers;
         pc_config.iceServers = iceServers;
     };
