@@ -313,7 +313,6 @@ function handleSendChannelStateChange() {
     trace('Send channel state is: ' + readyState);
     // If channel ready, enable user's input
     if (readyState == "open") {
-        trace('>>>>>> Started Communications');
         game.startCommunication();
         // dataChannelSend.disabled = false;
         // dataChannelSend.focus();

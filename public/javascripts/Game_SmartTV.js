@@ -236,7 +236,6 @@ BATTLESHIP.Game = function(options){
     }
 
     this.startCommunication = function(){
-        console.log('started Communication');
         boardController.startCommunication();
     }
 
@@ -248,7 +247,6 @@ BATTLESHIP.Game = function(options){
             } else{
                 myTurn = false;
             }
-            console.log('RECEIVED ID>>>' , oppId, id);
             boardController.setTurn(myTurn);
         } else{
             if(myTurn){
@@ -368,7 +366,6 @@ BATTLESHIP.Game = function(options){
 
     this.updateBoard = function(board){
         boardController.updateBoard(board);
-        console.log('reached game');
     }
     
     this.getTurn = function(){

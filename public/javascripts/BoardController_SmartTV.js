@@ -281,23 +281,9 @@ BATTLESHIP.BoardController = function (options) {
         placePiece(piece, pieceMesh, board);     
         pieceMesh.position.y = 3.48;
     }
-    
-    // this.rotatePiece = function(to){
-    //     selectedPiece.obj.rotation.y += 90 * Math.PI / 180;  
-    //     selectedPiece.pieceObj.orientation = 1 - selectedPiece.pieceObj.orientation;
-        
-    //     var centerBoard = posToCenter(selectedPiece.pieceObj, to);
-    //     var centerWorld = boardToWorld(centerBoard);
-    //     selectedPiece.obj.position.x = centerWorld[0];
-    //     selectedPiece.obj.position.z = centerWorld[1];
-
-    //     removePiece(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, board);
-    //     placePiece(selectedPiece.pieceObj, selectedPiece.obj, board);
-    // }
 
     this.setTurn = function(turn){
         myTurn = turn;
-        console.log('reached setTurn', myTurn, 'battle', battle);
         recievedId = true;
         scene.remove(waitMsg);
         if(battle){
@@ -908,7 +894,6 @@ BATTLESHIP.BoardController = function (options) {
     
 
     function awaitGame(){
-        console.log('awaitGame', communication, !setting);
         if(communication && !setting){
             scene.remove(text);
             battle = true
