@@ -247,6 +247,7 @@ BATTLESHIP.Game = function(options){
             } else{
                 myTurn = false;
             }
+            socket2.emit('turn', myTurn);
             boardController.setTurn(myTurn);
         } else{
             if(myTurn){
@@ -257,6 +258,7 @@ BATTLESHIP.Game = function(options){
                 }else{
                     boardController.oppBoardMiss(targetPos);
                 }
+                socket2.emit('sendResult', data[0]);
                 myTurn = false;
             } else{
                 data = data.split(",");
@@ -280,6 +282,7 @@ BATTLESHIP.Game = function(options){
                 boardController.myBoardMiss(target);
             }
             myTurn = true;
+            socket2.emit('turn', myTurn);
         }
     }
 

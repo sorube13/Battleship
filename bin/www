@@ -33,6 +33,33 @@ var io = require('socket.io')(server);
 var numClients = {};
 
 var controller = io.of('/controller');
+
+controller.on('connection', function(socket){
+  console.log('[CONTROLLER SOCKET] user connected');
+
+  socket.on('sendRoomName', function(room){
+    console.log('[CS] received room name', room);
+    controller.emit('enteredName', room);
+  });
+  socket.on('startGame', function(msg){
+    console.log('[CONTROLLER SOCKET] Start Game')
+    controller.emit('startedGame', msg);
+  });
+
+  socket.on('hitTarget', function(target){
+    controller.emit('checkTarget', target);
+  });
+
+  socket.on('sendResult', function(res){
+    controller.emit('checkRes', res);
+  });
+
+  socket.on('turn', function(turn){
+    controller.emit('setTurn', turn);
+  })
+});
+
+
 //var room = io.of('/room');
 // io.sockets
 io.sockets.on('connection', function (socket){
@@ -96,22 +123,7 @@ io.sockets.on('connection', function (socket){
 
 
 
-controller.on('connection', function(socket){
-  console.log('[CONTROLLER SOCKET] user connected');
 
-  socket.on('sendRoomName', function(room){
-    console.log('[CS] received room name', room);
-    controller.emit('enteredName', room);
-  });
-  socket.on('startGame', function(msg){
-    console.log('[CONTROLLER SOCKET] Start Game')
-    controller.emit('startedGame', msg);
-  });
-
-  socket.on('hitTarget', function(target){
-    controller.emit('checkTarget', target);
-  });
-});
 
 
 

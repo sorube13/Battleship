@@ -34,6 +34,7 @@ var remoteStream;
 var pc;
 
 var socket = null;
+var socket2 = null;
 
 // Peer Connection ICE protocol configuration (either Firefox or Chrome)
 var pc_config = webrtcDetectedBrowser === 'firefox' ?
@@ -91,7 +92,6 @@ var room =  href.substr(href.lastIndexOf('/') + 1);//prompt('Enter room name:', 
 
 // Connect to signalling server
 var socket = io.connect();
-//var socket = io('/room');
 var socket2 = io('/controller');
 
 // Send 'Create or join' message to singnalling server

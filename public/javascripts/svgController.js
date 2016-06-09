@@ -7,6 +7,9 @@ var nMouseOffsetY = 0;
 var tapped = false;
 var numShips = 0;
 
+var target = null;
+var myTurn = false;
+
 var myBoard = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -113,9 +116,11 @@ function coordinates(event){
     p.y = event.targetTouches[0].pageY;
     var x = Math.floor(10*(p.x -240)/345);
     var y = Math.floor(10*(p.y -10)/345);
-    console.log('X:', x, 'Y:', y, " = ", myBoard[x][y]);
-    var pos = [x,y];
-    socket.emit('hitTarget', pos);
+    // console.log('X:', x, 'Y:', y, " = ", myBoard[x][y]);
+    target = [x,y];
+    if(myTurn){
+    	socket.emit('hitTarget', target);
+    }
 
 }
 
@@ -306,5 +311,33 @@ function startGame(){
     document.getElementById('p2').style = "display:true"
 
 }
+
+socket.on('checkRes', function(res){
+	if(target && myTurn){
+		var svg = document.getElementById('svg2');
+		var pathSVG = boardToSVG(target[0], target[1]);
+		var pathSVGend = [];
+		pathSVGend[0] = pathSVG[0] + 1.7;
+		pathSVGend[1] = pathSVG[1] + 1.7;
+		var pathSVG = "M " + pathSVG[0] + " " + pathSVG[1] + " L " + pathSVGend[0] + " " + pathSVGend[1];
+		var hit = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
+		hit.setAttribute("d", pathSVG); //Set path's data
+		hit.style.strokeWidth = "0.1"; //Set stroke width
+		if(res === "true"){
+			// add hit
+			hit.style.stroke = "#F00"; //Set stroke colour
+		} else{
+			// add miss 
+			hit.style.stroke = "#00F"; //Set stroke colour
+		}
+		svg.appendChild(hit);
+		target = null;
+		myTurn = false;
+	}
+});
+
+socket.on('setTurn',function(turn){
+	myTurn = turn;
+});
 
 
