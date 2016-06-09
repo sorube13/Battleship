@@ -149,7 +149,7 @@ BATTLESHIP.BoardController = function (options) {
     var communication = false;
 
     var myTurn = false;
-    var recievedId = false;
+    var receivedId = false;
 
     var target;
 
@@ -315,7 +315,7 @@ BATTLESHIP.BoardController = function (options) {
 
     this.setTurn = function(turn){
         myTurn = turn;
-        recievedId = true;
+        receivedId = true;
         scene.remove(waitMsg);
         if(battle){
             if(myTurn){
@@ -1025,7 +1025,7 @@ BATTLESHIP.BoardController = function (options) {
             if(communication && isStartOnMousePosition(mouse3D)){
                 scene.remove(startButton);
                 battle = true;
-                if(recievedId){
+                if(receivedId){
                     if(myTurn){
                         scene.add(myTurnMsg);
                     }else{

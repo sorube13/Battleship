@@ -242,7 +242,7 @@ BATTLESHIP.Game = function(options){
         return [x,y];
     }
 
-     /**
+    /**
      * Checks whether the piece can be moved to the to position.
      * @param {Array} to Target position fot he piece object.
      * @param {Object} piece The piece object.
@@ -309,7 +309,7 @@ BATTLESHIP.Game = function(options){
         return true;
     }
 
-     /**
+    /**
      * Removes piece and mesh from the board according to the piece's previous position.
      * @param {Array} from The original position of the piece.
      * @param {boolean} orientation The orientation of the piece object.
@@ -412,10 +412,6 @@ BATTLESHIP.Game = function(options){
     }
 
     function sendTarget(pos){
-        sendData(pos);
-    }
-
-    this.sendT = function(pos){
         sendData(pos);
     }
 
@@ -551,13 +547,11 @@ BATTLESHIP.Game = function(options){
                 boardController.endGame(true);
             }
         }
-    }
+    } 
 
-    this.updateBoard = function(board){
-        boardController.updateBoard(board);
-        console.log('reached game');
+    this.getTurn = function(){
+        return myTurn;
     }
-    
 
     init();
 

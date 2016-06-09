@@ -92,7 +92,6 @@ var room =  href.substr(href.lastIndexOf('/') + 1);//prompt('Enter room name:', 
 // Connect to signalling server
 var socket = io.connect();
 //var socket = io('/room');
-var socket2 = io('/controller');
 
 // Send 'Create or join' message to singnalling server
 if (room !== '') {
@@ -103,8 +102,8 @@ if (room !== '') {
 }
 
 // Set getUserMedia constraints
-var constraints = {video: true,
-                 audio: true };
+var constraints = {video: true};//,
+                 //audio: true };
 
 // Call getUserMedia()
 navigator.getUserMedia(constraints, handleUserMedia, handleUserMediaError);
@@ -133,20 +132,7 @@ function handleUserMediaError(error){
 /////////////////////////////////////////////
 // Server-mediated message exchanging...
 /////////////////////////////////////////////
-/////////////////////////////////////////////
-// Controller message exchange .
-/////////////////////////////////////////////
 
-socket2.on('startedGame', function(msg){
-    console.log('>>>>>>> ' , msg);
-    var board = msg;
-    game.updateBoard(board);
-});
-
-socket2.on('hitTarget', function(pos){
-    game.sendTarget(pos);
-})
- 
 
 
 /////////////////////////////////////////////
@@ -291,7 +277,7 @@ function sendData(data) {
     if(isInitiator) sendChannel.send(data);
     else receiveChannel.send(data);
     trace('Sent data: ' + data);
-    console.log('data:', data, typeof(data));
+    //console.log('data:', data, typeof(data));
 }
 
 // Handlers...

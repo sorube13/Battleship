@@ -284,18 +284,18 @@ BATTLESHIP.BoardController = function (options) {
         pieceMesh.position.y = 3.48;
     }
     
-    this.rotatePiece = function(to){
-        selectedPiece.obj.rotation.y += 90 * Math.PI / 180;  
-        selectedPiece.pieceObj.orientation = 1 - selectedPiece.pieceObj.orientation;
+    // this.rotatePiece = function(to){
+    //     selectedPiece.obj.rotation.y += 90 * Math.PI / 180;  
+    //     selectedPiece.pieceObj.orientation = 1 - selectedPiece.pieceObj.orientation;
         
-        var centerBoard = posToCenter(selectedPiece.pieceObj, to);
-        var centerWorld = boardToWorld(centerBoard);
-        selectedPiece.obj.position.x = centerWorld[0];
-        selectedPiece.obj.position.z = centerWorld[1];
+    //     var centerBoard = posToCenter(selectedPiece.pieceObj, to);
+    //     var centerWorld = boardToWorld(centerBoard);
+    //     selectedPiece.obj.position.x = centerWorld[0];
+    //     selectedPiece.obj.position.z = centerWorld[1];
 
-        removePiece(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, board);
-        placePiece(selectedPiece.pieceObj, selectedPiece.obj, board);
-    }
+    //     removePiece(selectedPiece.pieceObj, selectedPiece.origOrient, selectedPiece.origPos, board);
+    //     placePiece(selectedPiece.pieceObj, selectedPiece.obj, board);
+    // }
 
     this.setTurn = function(turn){
         myTurn = turn;
@@ -366,7 +366,7 @@ BATTLESHIP.BoardController = function (options) {
 
     }
 
-    this.oppBoardHit = function(){
+    this.oppBoardHit = function(target){
         var pos = oppBoardToWorld(target);
         var newPiece = hitOpp.clone();
         newPiece.position.set(pos.x, pos.y, -7.4);
@@ -378,7 +378,7 @@ BATTLESHIP.BoardController = function (options) {
         hitAudio.play();
     }
 
-    this.oppBoardMiss = function(){
+    this.oppBoardMiss = function(target){
         var pos = oppBoardToWorld(target);
         var newPiece = missOpp.clone();
         newPiece.position.set(pos.x, pos.y, -7.4);
