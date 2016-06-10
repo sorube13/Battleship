@@ -84,6 +84,7 @@ var sdpConstraints = webrtcDetectedBrowser === 'firefox' ?
 var href = location.pathname;
 
 var room =  href.substr(href.lastIndexOf('/') + 1);//prompt('Enter room name:', default_name);
+var contr = href.substring(href.indexOf('TV/')+3, href.indexOf('/r/'));
 // if(!room){
 //     room = default_name;
 // }
@@ -99,6 +100,7 @@ if (room !== '') {
     console.log('Create or join room', room);
     socket.emit('create or join', room);
     socket.emit('getCred');
+    socket2.emit('join room', contr);
     //getIceServers();
 }
 
@@ -146,6 +148,8 @@ socket2.on('startedGame', function(msg){
 socket2.on('checkTarget', function(pos){
     game.sendTarget(pos);
 });
+
+
  
 
 

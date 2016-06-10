@@ -357,14 +357,17 @@ BATTLESHIP.Game = function(options){
             numMyShipsHit++;
             if(numMyShipsHit === numShips){
                 boardController.endGame(false);
+                socket2.emit('endGame', false);
             }
         } else{
             numOppShipsHit++;
             console.log("numOppShipsHit:", numOppShipsHit);
             if(numOppShipsHit === numShips){
                 boardController.endGame(true);
+                socket2.emit('endGame', true);
             }
         }
+
     }
 
     this.updateBoard = function(board){

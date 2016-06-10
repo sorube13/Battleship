@@ -19,7 +19,10 @@
 <script type="text/javascript">
 
 	var socket = io('/controller');
+	var href = location.pathname;
+	var idRoom =  href.substr(href.lastIndexOf('/') + 1);
 
+	socket.emit('join room', idRoom);
 
     function sendName() {
         var page = document.getElementById('page').value;
@@ -35,6 +38,8 @@
 		    .substring(1);
 		document.getElementById('page').value = val;
     }
+
+
 
 
 </script>
@@ -136,6 +141,42 @@
 		</div>
 	</div>
 </div>
+<div id="pwin" style = "display:none">
+	<div role="main" class="ui-content">
+		<div class="container-fluid">
+			<div class="row">
+			<div class="col-xs-12">
+				<svg xmlns="httplo://www.w3.org/2000/svg" viewBox="0 0 30 30" id="svg2">
+
+					<g id="win">
+					  <rect  x="0.5" y="1" width="15" height="10" stroke="black" stroke-width="0.1" fill="#9a32cd" ></rect>
+					  <text x="2" y="2" font-family="Verdana" font-size="3" fill="black" > Winner</text>
+					</g>
+				</svg>
+			</div>
+		 	</div>
+		</div>
+	</div>
+</div>
+
+<div id="ploose" style = "display:none">
+	<div role="main" class="ui-content">
+		<div class="container-fluid">
+			<div class="row">
+			<div class="col-xs-12">
+				<svg xmlns="httplo://www.w3.org/2000/svg" viewBox="0 0 30 30" id="svg2">
+
+					<g id="win">
+					  <<rect  x="0.5" y="1" width="15" height="10" stroke="black" stroke-width="0.1" fill="#9a32cd" ></rect>
+					  <text x="2" y="2" font-family="Verdana" font-size="3" fill="black" > Looser</text>
+					</g>
+				</svg>
+			</div>
+		 	</div>
+		</div>
+	</div>
+</div>
+
 
 <script src='/javascripts/svgController.js'></script>
 

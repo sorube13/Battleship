@@ -31,32 +31,70 @@ app.set('port', port);
 var server = http.createServer(app);
 var io = require('socket.io')(server);
 var numClients = {};
+var numClientsController = {};
 
 var controller = io.of('/controller');
 
 controller.on('connection', function(socket){
   console.log('[CONTROLLER SOCKET] user connected');
 
+  socket.on('disconnect', function(){
+    if(socket.room !== undefined){
+      numClientsController[socket.room]--;
+      if(numClientsController[socket.room] === 0){
+          delete numClientsController[socket.room];
+      }
+      console.log('user disconnection', numClientsController);
+    }
+  });
+
+  socket.on('join room', function(room){
+    socket.room = room;
+      console.log('THE CONTROLLER ROOM IS: ', room);
+      if(room !== undefined){
+        if(numClientsController[room] === undefined || numClientsController[room] === 0){
+            numClientsController[room] = 1;
+        } else{
+            numClientsController[room]++;
+        }
+        console.log('[CS] numClients', numClientsController);
+        if (numClientsController[room] === 1){
+            socket.join(room);
+        } else if (numClientsController[room] === 2) {
+            io.sockets.in(room).emit('join', room);
+            socket.join(room);
+        } else { // max two clients
+            socket.emit('full', room);
+        }
+        socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
+        socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
+      }
+  });
+
   socket.on('sendRoomName', function(room){
     console.log('[CS] received room name', room);
-    controller.emit('enteredName', room);
+    controller.to(socket.room).emit('enteredName', room);
   });
   socket.on('startGame', function(msg){
     console.log('[CONTROLLER SOCKET] Start Game')
-    controller.emit('startedGame', msg);
+    controller.to(socket.room).emit('startedGame', msg);
   });
 
   socket.on('hitTarget', function(target){
-    controller.emit('checkTarget', target);
+    controller.to(socket.room).emit('checkTarget', target);
   });
 
   socket.on('sendResult', function(res){
-    controller.emit('checkRes', res);
+    controller.to(socket.room).emit('checkRes', res);
   });
 
   socket.on('turn', function(turn){
-    controller.emit('setTurn', turn);
-  })
+    controller.to(socket.room).emit('setTurn', turn);
+  });
+
+  socket.on('endGame', function(win){
+    controller.to(socket.room).emit('checkWin', win);
+  });
 });
 
 
@@ -72,21 +110,25 @@ io.sockets.on('connection', function (socket){
         socket.emit('log', array);
     }
     socket.on('disconnect', function(){
+      if(socket.room !== undefined){
         numClients[socket.room]--;
         if(numClients[socket.room] === 0){
             delete numClients[socket.room];
         }
         console.log('user disconnection', numClients);
+      }
     });
     socket.on('message', function (message) {
         log('Got message:', message);
     // for a real app, would be room only (not broadcast)
         //socket.broadcast.to(message.channel).emit('message', message);
-        socket.broadcast.emit('message', message);
+        //socket.broadcast.emit('message', message);
+        socket.broadcast.to(socket.room).emit('message', message);
     });
 
     socket.on('create or join', function (room) {
         socket.room = room;
+        console.log('THE ROOM IS: ', room);
         if(room !== undefined){
 
           if(numClients[room] === undefined || numClients[room] === 0){

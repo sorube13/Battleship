@@ -340,4 +340,11 @@ socket.on('setTurn',function(turn){
 	myTurn = turn;
 });
 
-
+socket.on('checkWin', function(win){
+	document.getElementById('p2').style = "display:none"
+	if(win){
+    	document.getElementById('pwin').style = "display:true"
+	} else{
+    	document.getElementById('ploose').style = "display:true"
+	}
+})

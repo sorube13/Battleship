@@ -30,15 +30,29 @@
 
 <script type="text/javascript">
 	var socket = io('/controller');
-	console.log('[CS tv]created socket')
+	console.log('[CS tv]created socket');
+
+	var idRoom = randomGen();
+
+	socket.emit('join room', idRoom);
+	console.log('emited join room');
 
 	socket.on('enteredName', function(msg){
 		console.log('entered name');
-		window.location = window.location +"/r/" + msg;
+		window.location = window.location + "/" + idRoom +"/r/" + msg;
 	});
+
+	function randomGen(){
+    	var val = Math.floor((1 + Math.random()) * 0x100000000)
+		    .toString(16)
+		    .substring(1);
+		return val;
+    }
 </script>
 <script type="text/javascript">
-new QRCode(document.getElementById("qrcode"), "https://lit-temple-74954.herokuapp.com/controller");
+//var URL = "https://lit-temple-74954.herokuapp.com/controller/" + idRoom; 
+var URL = "https://lit-temple-74954.herokuapp.com/controller/" + idRoom; 
+new QRCode(document.getElementById("qrcode"), URL);
 </script>
 
 
