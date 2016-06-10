@@ -132,7 +132,7 @@ BATTLESHIP.BoardController = function (options) {
      */
     var setting = true;
 
-    var initSet = false;
+    var initSet = true;
 
     var numShips = 7;
     var numShipsSet = 0;
@@ -286,6 +286,7 @@ BATTLESHIP.BoardController = function (options) {
         myTurn = turn;
         recievedId = true;
         scene.remove(waitMsg);
+        console.log('>>>>Setting turn', myTurn, recievedId, battle);
         if(battle){
             if(myTurn){
                 scene.add(myTurnMsg);
@@ -297,6 +298,7 @@ BATTLESHIP.BoardController = function (options) {
 
     this.startCommunication = function(){
         communication = true;
+        console.log(">>>>>>>>> communication", communication);
         awaitGame();
     }
     
@@ -485,6 +487,8 @@ BATTLESHIP.BoardController = function (options) {
      * Initialize the materials.
      */
     function initMaterials() {
+        var loader = new THREE.TextureLoader();       
+
         // board material
         materials.boardMaterial = new THREE.MeshPhongMaterial({
             color: 0x808080
@@ -510,37 +514,37 @@ BATTLESHIP.BoardController = function (options) {
         // start button
         materials.textMaterial = new THREE.MeshBasicMaterial({
             transparent: true, 
-            map:THREE.ImageUtils.loadTexture('/images/text/note.png')
+            map: loader.load('/images/text/note.png') //THREE.ImageUtils.loadTexture('/images/text/note.png')
         });
 
         materials.startMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map:THREE.ImageUtils.loadTexture('/images/text/start.png')
+            map:loader.load('/images/text/start.png')//THREE.ImageUtils.loadTexture('/images/text/start.png')
         });
 
         materials.waitMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture('/images/text/wait.png')
+            map: loader.load('/images/text/wait.png')
         });
 
         materials.myTurnMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture('/images/text/myTurn.png')
+            map: loader.load('/images/text/myTurn.png')
         });
 
         materials.othersTurnMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture('/images/text/othersTurn.png')
+            map: loader.load('/images/text/othersTurn.png')
         });
 
         materials.winMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture('/images/text/win.png')
+            map: loader.load('/images/text/win.png')
         });
 
         materials.looseMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture('/images/text/loose.png')
+            map: loader.load('/images/text/loose.png')
         });
 
         // hit material
@@ -556,14 +560,14 @@ BATTLESHIP.BoardController = function (options) {
         // water material
         materials.waterMaterial = new THREE.MeshBasicMaterial({
             transparent: true,
-            map: THREE.ImageUtils.loadTexture('/images/water.jpg')
+            map: loader.load('/images/water.jpg')
         });   
 
         materials.explosionMaterial = new THREE.ShaderMaterial({
             uniforms: { 
                 tExplosion: {
                     type: "t", 
-                    value: THREE.ImageUtils.loadTexture( '/images/explosion.png' )
+                    value: loader.load( '/images/explosion.jpg' )
                 },
                 time: { // float initialized to 0
                     type: "f", 
@@ -574,10 +578,10 @@ BATTLESHIP.BoardController = function (options) {
             fragmentShader: document.getElementById('fragmentShader').textContent
         });
 
-        materials.noiseTexture = new THREE.ImageUtils.loadTexture('/images/cloud.png');
+        materials.noiseTexture =loader.load('/images/cloud.png');
         materials.noiseTexture.wrapS = materials.noiseTexture.wrapT = THREE.RepeatWrapping;
 
-        materials.lavaTexture = new THREE.ImageUtils.loadTexture('/images/lava.jpg');
+        materials.lavaTexture = loader.load('/images/lava.jpg');
         materials.lavaTexture.wrapS = materials.lavaTexture.wrapT = THREE.RepeatWrapping;
 
         customUniforms = {
@@ -597,7 +601,7 @@ BATTLESHIP.BoardController = function (options) {
 
         materials.customMaterial.side = THREE.DoubleSide;
 
-        materials.waterTexture = new THREE.ImageUtils.loadTexture('/images/water.jpg' );
+        materials.waterTexture = loader.load('/images/water.jpg' );
         materials.waterTexture.wrapS = materials.waterTexture.wrapT = THREE.RepeatWrapping; 
         
         // use "this." to create global object
@@ -894,6 +898,7 @@ BATTLESHIP.BoardController = function (options) {
     
 
     function awaitGame(){
+        console.log('Reached await game with communication', communication, 'setting', setting, 'recievedId', recievedId);
         if(communication && !setting){
             scene.remove(text);
             battle = true
@@ -910,10 +915,6 @@ BATTLESHIP.BoardController = function (options) {
                 waitMsg.position.set(-50, 50, 0);
                 scene.add(waitMsg);
             }
-        }else if(communication){
-            waitMsg = new THREE.Mesh(geometries.textGeom, materials.waitMaterial);
-            waitMsg.position.set(-50, 50, 0);
-            scene.add(waitMsg);
         }
     }
 

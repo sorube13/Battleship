@@ -550,7 +550,8 @@ BATTLESHIP.Game = function(options){
     } 
 
     this.getTurn = function(){
-        return myTurn;
+        var variables = [myTurn, oppId];
+        return variables;
     }
 
     init();
