@@ -1,6 +1,6 @@
 {
   "name": "Battleship",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Master's Thesis",
   "main": "server.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "battleship"
   ],
   "author": "Silvia Orube",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/sorube13/Battleship/issues"
   },
