@@ -83,27 +83,21 @@ var sdpConstraints = webrtcDetectedBrowser === 'firefox' ?
 var href = location.pathname;
 
 var room =  href.substr(href.lastIndexOf('/') + 1);//prompt('Enter room name:', default_name);
-// if(!room){
-//     room = default_name;
-// }
 
-// document.querySelector('#roomTitle').innerHTML += room;
 
 // Connect to signalling server
 var socket = io.connect();
-//var socket = io('/room');
 
 // Send 'Create or join' message to singnalling server
 if (room !== '') {
     console.log('Create or join room', room);
     socket.emit('create or join', room);
     socket.emit('getCred');
-    //getIceServers();
 }
 
 // Set getUserMedia constraints
-var constraints = {video: true};//,
-                 //audio: true };
+var constraints = {video: true,
+                   audio: true };
 
 // Call getUserMedia()
 navigator.getUserMedia(constraints, handleUserMedia, handleUserMediaError);
@@ -156,7 +150,7 @@ socket.on('full', function (room){
 // another peer is joining the channel
 socket.on('join', function (room){
     console.log('Another peer made a request to join room ' + room);
-    console.log('This peer is the initiator of room ' + room + '!');
+    //console.log('This peer is the initiator of room ' + room + '!');
     isChannelReady = true;
 });
 
@@ -174,7 +168,7 @@ socket.on('log', function (array){
 
 // Receive message from the other peer via the signalling server 
 socket.on('message', function (message){
-    console.log('Received message:', message);
+    //console.log('Received message:', message);
     if (message === 'got user media') {
         checkAndStart();
     } else if (message.type === 'offer') {
@@ -215,7 +209,7 @@ socket.on('ICE Candidates', function(cred){
 ////////////////////////////////////////////////
 // Send message to the other peer via the signalling server
 function sendMessage(message){
-    console.log('Sending message: ', message);
+    //console.log('Sending message: ', message);
     socket.emit('message', message);
 }
 ////////////////////////////////////////////////////
@@ -239,9 +233,9 @@ function createPeerConnection() {
     try {
         pc = new RTCPeerConnection(pc_config, pc_constraints);
         pc.onicecandidate = handleIceCandidate;
-        console.log('Created RTCPeerConnnection with:\n' +
-            '  config: \'' + JSON.stringify(pc_config) + '\';\n' +
-            '  constraints: \'' + JSON.stringify(pc_constraints) + '\'.');
+        // console.log('Created RTCPeerConnnection with:\n' +
+        //     '  config: \'' + JSON.stringify(pc_config) + '\';\n' +
+        //     '  constraints: \'' + JSON.stringify(pc_constraints) + '\'.');
     } catch (e) {
         console.log('Failed to create PeerConnection, exception: ' + e.message);
         alert('Cannot create RTCPeerConnection object.');
@@ -255,7 +249,7 @@ function createPeerConnection() {
             // Create a reliable data channel
             sendChannel = pc.createDataChannel("sendDataChannel",
               {reliable: true});
-            console.log('Created sendChannel' , sendChannel);
+            //console.log('Created sendChannel' , sendChannel);
             trace('Created send data channel');
         } catch (e) {
             alert('Failed to create data channel. ');
@@ -290,8 +284,7 @@ function gotReceiveChannel(event) {
 }
 
 function handleMessage(event) {
-    trace('Received message: ' + event.data);
-    console.log('Received message', event, typeof(event.data));
+    //trace('Received message: ' + event.data);
     game.receiveFromOpponent(event.data);
 }
 
@@ -326,7 +319,7 @@ function handleReceiveChannelStateChange() {
 
 // ICE candidates management
 function handleIceCandidate(event) {
-    console.log('handleIceCandidate event: ', event);
+    //console.log('handleIceCandidate event: ', event);
     if (event.candidate) {
         sendMessage({
             type: 'candidate',
@@ -334,7 +327,7 @@ function handleIceCandidate(event) {
             id: event.candidate.sdpMid,
             candidate: event.candidate.candidate});
     } else {
-        console.log('End of candidates.');
+        //console.log('End of candidates.');
     }
 }
 

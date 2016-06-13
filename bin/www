@@ -119,7 +119,7 @@ io.sockets.on('connection', function (socket){
       }
     });
     socket.on('message', function (message) {
-        log('Got message:', message);
+        //log('Got message:', message);
     // for a real app, would be room only (not broadcast)
         //socket.broadcast.to(message.channel).emit('message', message);
         //socket.broadcast.emit('message', message);
