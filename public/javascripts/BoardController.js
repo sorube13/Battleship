@@ -331,8 +331,8 @@ BATTLESHIP.BoardController = function (options) {
         awaitGame();
     }
     
-    this.myBoardHit = function(target, totalSink){
-        var pos = boardToWorld(target);
+    this.myBoardHit = function(coords, totalSink){
+        var pos = boardToWorld(coords);
         //var newPiece = hitPiece.clone();
         var newPiece = hitPlane.clone();
         newPiece.position.set(pos.x, pos.y, pos.z);
@@ -341,7 +341,7 @@ BATTLESHIP.BoardController = function (options) {
         setTimeout(function(){
             hit = false;
         }, 3000);
-        var ship = board[target[0]][target[1]];
+        var ship = board[coords[0]][coords[1]];
         if(totalSink){
             if(ship.piece.orientation === 1){
                 ship.pieceMesh.rotation.z -= 20*Math.PI /180;
@@ -350,7 +350,7 @@ BATTLESHIP.BoardController = function (options) {
             }
                 
         }
-        board[target[0]][target[1]] = 1;
+        board[coords[0]][coords[1]] = 1;
         myTurn = true;
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
@@ -358,8 +358,8 @@ BATTLESHIP.BoardController = function (options) {
 
     }
 
-    this.myBoardMiss = function(target){
-        var pos = boardToWorld(target);
+    this.myBoardMiss = function(coords){
+        var pos = boardToWorld(coords);
         var newPiece = missPlane.clone();
         newPiece.position.set(pos.x, 2.61, pos.z);
         scene.add(newPiece);
@@ -375,7 +375,7 @@ BATTLESHIP.BoardController = function (options) {
             scene.remove(missMyBoard);
 
         }, 3000);
-        board[target[0]][target[1]] = 'x';
+        board[coords[0]][coords[1]] = 'x';
         myTurn = true;
         scene.remove(oppTurnMsg);
         scene.add(myTurnMsg);
@@ -1023,6 +1023,7 @@ BATTLESHIP.BoardController = function (options) {
      */
     function onMouseClick(event){
         var mouse3D = getYMouse3D(event, renderer, camera);
+        trace('clicked: ' + mouse3D.x + " " + mouse3D.y);
         if(!battle && !setting && !endGame) { // phase 1: construction of board
             if(communication && isStartOnMousePosition(mouse3D)){
                 scene.remove(startButton);
@@ -1048,6 +1049,8 @@ BATTLESHIP.BoardController = function (options) {
                 if(oppBoard[target[0]][target[1]] === 0){
                     if(callbacks.selectTarget){
                         callbacks.selectTarget(target);
+                        trace('Sending targets: ' + target);
+                        myTurn = false;
                         //renderer.domElement.removeEventListener('click', onMouseClick, false);
                     }
                 }
