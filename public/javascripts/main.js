@@ -284,7 +284,7 @@ function gotReceiveChannel(event) {
 }
 
 function handleMessage(event) {
-    //trace('Received message: ' + event.data);
+    trace('Received message: ' + event.data);
     game.receiveFromOpponent(event.data);
 }
 

@@ -882,7 +882,7 @@ BATTLESHIP.BoardController = function (options) {
     function onMouseDown(event){
         var mouse3D = getMouse3D(event, renderer, camera);
 
-        if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
+        if((isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting)) && !battle && !endGame){
             handleDown(mouse3D);
             renderer.domElement.addEventListener("mousemove", onMouseMove, false);
         } 
@@ -897,7 +897,7 @@ BATTLESHIP.BoardController = function (options) {
     function onTouchStart(event){
         var mouse3D = getTouch3D(event, renderer, camera);
 
-        if(isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting) && !battle && !endGame){
+        if((isMouseOnBoard(mouse3D) || (isMouseOnInitBoard(mouse3D) && setting)) && !battle && !endGame){
             handleDown(mouse3D);
             renderer.domElement.addEventListener("touchmove", onTouchMove, false);
         }
@@ -1044,12 +1044,14 @@ BATTLESHIP.BoardController = function (options) {
             }
         }else{ // phase 2: game
             if(isMouseOnOppBoard(mouse3D) && myTurn && !endGame){
-                target = [ Math.floor(mouse3D.x / squareSize) , Math.floor((squareSize * 11 - mouse3D.y) / squareSize)] 
-                if(callbacks.selectTarget){
-                    callbacks.selectTarget(target);
-                    //renderer.domElement.removeEventListener('click', onMouseClick, false);
-                    
+                target = [ Math.floor(mouse3D.x / squareSize) , Math.floor((squareSize * 11 - mouse3D.y) / squareSize)] ;
+                if(oppBoard[target[0]][target[1]] === 0){
+                    if(callbacks.selectTarget){
+                        callbacks.selectTarget(target);
+                        //renderer.domElement.removeEventListener('click', onMouseClick, false);
+                    }
                 }
+                
             }
 
         }
