@@ -48,7 +48,11 @@
 
 	socket.on('enteredName', function(msg){
 		console.log('entered name');
-		window.location = window.location + "/" + idRoom +"/r/" + msg;
+		if(window.location.pathname.substring(window.location.pathname.length - 1) === "/"){
+			window.location = window.location  + idRoom +"/r/" + msg;
+		}else {
+			window.location = window.location + "/" + idRoom +"/r/" + msg;
+		}
 	});
 
 	function randomGen(){

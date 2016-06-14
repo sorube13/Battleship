@@ -9,6 +9,14 @@ var room= 'default';
 var secure = 1;
 
 
+// var ident= "sorubefr";
+// var secret= "34cc7434-3232-11e6-b2c2-7acd994f32e4";
+// var domain= "www.silviafr-battleship.com";
+// var application= "default";
+// var room= 'default';
+// var secure = 1;
+
+
 /**
  * Module dependencies.
  */
