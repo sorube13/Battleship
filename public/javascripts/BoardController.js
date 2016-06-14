@@ -1023,7 +1023,7 @@ BATTLESHIP.BoardController = function (options) {
      */
     function onMouseClick(event){
         var mouse3D = getYMouse3D(event, renderer, camera);
-        trace('clicked: ' + mouse3D.x + " " + mouse3D.y);
+        //trace('clicked: ' + mouse3D.x + " " + mouse3D.y);
         if(!battle && !setting && !endGame) { // phase 1: construction of board
             if(communication && isStartOnMousePosition(mouse3D)){
                 scene.remove(startButton);
