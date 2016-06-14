@@ -227,6 +227,7 @@ BATTLESHIP.Game = function(options){
 
     this.sendTarget = function(pos){
         targetPos = pos;
+        trace('Sent target: '+ pos);
         sendData(pos);
     }
 
