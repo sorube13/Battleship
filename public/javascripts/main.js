@@ -262,7 +262,7 @@ function createPeerConnection() {
         pc.ondatachannel = gotReceiveChannel;
     }
 
-    game.startCommunication();
+   // game.startCommunication();
 }
 
 // Data channel management
@@ -293,6 +293,7 @@ function handleSendChannelStateChange() {
     trace('Send channel state is: ' + readyState);
     // If channel ready, enable user's input
     if (readyState == "open") {
+        game.startCommunication();
         // dataChannelSend.disabled = false;
         // dataChannelSend.focus();
         // dataChannelSend.placeholder = "";
@@ -306,6 +307,7 @@ function handleReceiveChannelStateChange() {
     trace('Receive channel state is: ' + readyState);
     // If channel ready, enable user's input
     if (readyState == "open") {
+        game.startCommunication();
         // dataChannelSend.disabled = false;
         // dataChannelSend.focus();
         // dataChannelSend.placeholder = "";
