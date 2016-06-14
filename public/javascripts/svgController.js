@@ -125,10 +125,13 @@ function mouseMove(evt) {
 
 function coordinates(event){
 	var p = document.getElementById('svg').createSVGPoint();
-    p.x = event.targetTouches[0].pageX;
-    p.y = event.targetTouches[0].pageY;
+    // p.x = event.targetTouches[0].pageX;
+    // p.y = event.targetTouches[0].pageY;
+    p.x = event.offsetX;
+    p.y = event.offsetY;
     var x = Math.floor(10*(p.x -240)/345);
     var y = Math.floor(10*(p.y -10)/345);
+    console.log('x:', x, 'y:', y);
     // console.log('X:', x, 'Y:', y, " = ", myBoard[x][y]);
     target = [x,y];
     if(myTurn){
