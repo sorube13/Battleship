@@ -133,8 +133,8 @@ function coordinates(event){
     var y = Math.floor(10*(p.y -10)/345);
     console.log('x:', x, 'y:', y);
     // console.log('X:', x, 'Y:', y, " = ", myBoard[x][y]);
-    target = [x,y];
     if(myTurn){
+    	target = [x,y];
     	if(oppBoard[target[0]][target[1]] === 0){
 	    	socket.emit('hitTarget', target);
 	    	myTurn = false;
