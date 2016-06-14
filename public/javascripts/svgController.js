@@ -23,6 +23,19 @@ var myBoard = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
+var oppBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+
 var pieces={};
 
 function onMouseDown(event){
@@ -119,8 +132,11 @@ function coordinates(event){
     // console.log('X:', x, 'Y:', y, " = ", myBoard[x][y]);
     target = [x,y];
     if(myTurn){
-    	socket.emit('hitTarget', target);
-    }
+    	if(oppBoard[target[0]][target[1]] === 0){
+	    	socket.emit('hitTarget', target);
+	    	myTurn = false;
+	    }
+	}
 
 }
 
@@ -313,7 +329,7 @@ function startGame(){
 }
 
 socket.on('checkRes', function(res){
-	if(target && myTurn){
+	if(target){
 		var svg = document.getElementById('svg2');
 		var pathSVG = boardToSVG(target[0], target[1]);
 		var pathSVGend = [];
@@ -325,9 +341,11 @@ socket.on('checkRes', function(res){
 		hit.style.strokeWidth = "0.1"; //Set stroke width
 		if(res === "true"){
 			// add hit
+			oppBoard[target[0]][target[1]] = 1;
 			hit.style.stroke = "#F00"; //Set stroke colour
 		} else{
 			// add miss 
+			oppBoard[target[0]][target[1]] = 'x';
 			hit.style.stroke = "#00F"; //Set stroke colour
 		}
 		svg.appendChild(hit);
