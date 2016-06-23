@@ -22,7 +22,7 @@ var secure = 1;
  */
 
 var app = require('../app');
-var debug = require('debug')('quiz:server');
+var debug = require('debug')('Battleship:server');
 var http = require('http');
 
 /**
@@ -152,7 +152,7 @@ io.sockets.on('connection', function (socket){
           if (numClients[room] === 1){
               socket.join(room);
               socket.emit('created', room);
-          } else if (numClients[room] === 2 || numClients[room] === 3) {
+          } else if (numClients[room] === 2) {
               io.sockets.in(room).emit('join', room);
               socket.join(room);
               socket.emit('joined', room);
